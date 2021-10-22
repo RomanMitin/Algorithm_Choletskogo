@@ -1,4 +1,5 @@
 #pragma once
+#include<algorithm>
 #include"Matrix.h"
 
 Matrix create_Lower_triangle_matrix(int64_t size);
@@ -9,4 +10,6 @@ Matrix create_positive_definite_matrix(size_t size);
 
 Matrix Cholesky_decomposition(const Matrix& mat);
 
-type error_rate(Matrix lower_triangle_exp, Matrix lower_triangle_calcul);
+Matrix Cholesky_decomposition_block(const Matrix& mat);
+
+std::pair<type, double> error_rate(const Matrix& lower_triangle_exp, const Matrix& lower_triangle_calcul);

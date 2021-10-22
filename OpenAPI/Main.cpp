@@ -7,11 +7,12 @@
 
 using namespace std;
 
-const size_t N = 2000;
+const size_t N = 1500;
 
-int main() {
+int main() 
+{
 
-	srand(1);
+	srand(10);
 	
 	time_t start = clock();
 	Matrix l = create_Lower_triangle_matrix(N);
@@ -20,11 +21,26 @@ int main() {
 	cout << "Time to multiply matrix: ";
 	cout << (clock() - start) / 1000.0 << "\n\n";
 	//cout << a;
+
 	start = clock();
 	Matrix b = Cholesky_decomposition(a);
-	//cout << b;
 	cout << "Cholesky decomposition algorithm time: " << (clock() - start) / 1000.0 << "\n\n";
-	cout << "Error in Cholesky decomposition algorithm: " << error_rate(l, b) << '\n';
+
+	start = clock();
+	Matrix c = Cholesky_decomposition_block(a);
+	/*cout << b;
+	cout << c;*/
+	time_t finish = clock();
+
+	auto err = error_rate(l, b);
+	
+	cout << "Absolute error in Cholesky decomposition algorithm: " << err.first << '\n';
+	cout << "Relative error in Cholesky decomposition algorithm: " << err.second << "%\n\n";
+
+	auto err2 = error_rate(l, c);
+	cout << "block Cholesky decomposition algorithm time: " << (finish - start) / 1000.0 << "\n\n";
+	cout << "Absolute error in block Cholesky decomposition algorithm: " << err2.first << '\n';
+	cout << "Relative error in block Cholesky decomposition algorithm: " << err2.second << "%\n";
 
 	return 0;
 }
