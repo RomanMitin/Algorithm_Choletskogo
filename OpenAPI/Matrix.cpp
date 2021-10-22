@@ -41,11 +41,15 @@ Matrix::Matrix(Matrix&& second) noexcept
 
 type* Matrix::operator[](size_t i)
 {
+	if (i >= _sizer)
+		throw std::exception();
 	return p + i * _sizec;
 }
 
 const type* Matrix::operator[](size_t i) const
 {
+	if (i >= _sizer)
+		throw std::exception();
 	return p + i * _sizec;
 }
 
@@ -89,18 +93,39 @@ Matrix Matrix::operator*(const Matrix& second)
 		throw std::exception();
 
 	Matrix result(this->sizer(), second.sizec());
+
 	for (int i = 0; i < this->sizer(); i++)
 	{
 		//#pragma omp parallel for
 		for (int j = 0; j < this->sizec(); j++)
 		{
-			for (size_t k = 0; k < second.sizec(); k++)
+			for (size_t k = 0; k < second.sizer(); k++)
 			{
 				result[i][j] += (*this)[i][k] * second[k][j];
 			}
 		}
 	}
 	return result;
+}
+
+Matrix Matrix::operator+(const Matrix& second)
+{
+	if (this->sizer() != second.sizer() || this->sizec() != second.sizec())
+		throw std::exception();
+
+	Matrix result(this->sizer(), this->sizec());
+
+#pragma omp parallel for
+	for (int64_t i = 0; i < result.sizer(); i++)
+	{
+		for (int64_t j = 0; j < result.sizec(); j++)
+		{
+			result[i][j] = (*this)[i][j] + second[i][j];
+		}
+	}
+
+	return result;
+
 }
 
 Matrix Matrix::operator-(const Matrix& second)
@@ -127,7 +152,7 @@ Matrix& Matrix::transposition()
 	Matrix tmp(this->sizec(), this->sizer());
 
 #pragma omp parallel for
-	for (size_t i = 0; i < this->sizer(); i++)
+	for (int64_t i = 0; i < this->sizer(); i++)
 	{
 		for (size_t j = 0; j < this->sizec(); j++)
 		{

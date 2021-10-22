@@ -7,20 +7,21 @@
 
 using namespace std;
 
-const size_t N = 1500;
+const size_t N = 10;
+
+constexpr bool PRINT_MATRIX = false;
 
 int main() 
 {
 
 	srand(10);
-	
 	time_t start = clock();
 	Matrix l = create_Lower_triangle_matrix(N);
-	//cout << l;
+	if constexpr (PRINT_MATRIX) { cout << l; }
 	Matrix a = sqr(l);
 	cout << "Time to multiply matrix: ";
 	cout << (clock() - start) / 1000.0 << "\n\n";
-	//cout << a;
+	if constexpr (PRINT_MATRIX) { cout << a; }
 
 	start = clock();
 	Matrix b = Cholesky_decomposition(a);
@@ -28,8 +29,7 @@ int main()
 
 	start = clock();
 	Matrix c = Cholesky_decomposition_block(a);
-	/*cout << b;
-	cout << c;*/
+	if constexpr (PRINT_MATRIX) { cout << b; cout << c; }
 	time_t finish = clock();
 
 	auto err = error_rate(l, b);

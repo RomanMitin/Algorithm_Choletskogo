@@ -52,6 +52,8 @@ public:
 
 	Matrix operator*(const Matrix& second);
 
+	Matrix operator+(const Matrix& second);
+
 	Matrix operator-(const Matrix& second);
 
 	Matrix& transposition();

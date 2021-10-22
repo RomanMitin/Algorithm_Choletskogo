@@ -1,5 +1,6 @@
 #include<omp.h>
 #include<cmath>
+#include<algorithm>
 #include"Matrix_func.h"
 
 
@@ -121,8 +122,6 @@ M calc_L(const L_M& a, const M& b, size_t a_size, size_t b_columns)
 			ans[i][j] /= a[i][i];
 		}
 	}
-
-
 	return ans;
 }
 
@@ -130,7 +129,7 @@ Matrix findL21(const Matrix& L11, Matrix A21)
 {
 	A21.transposition();
 	//Matrix result(L11.sizec(), A21.sizec());
-	return calc_L(L11, A21, L11.sizer(), A21.sizec()).transposition();
+	return std::move(calc_L(L11, A21, L11.sizer(), A21.sizec()).transposition());
 
 	//return result.transposition();
 }
@@ -142,7 +141,9 @@ Matrix Cholesky_decomposition_block(const Matrix& mat)
 		throw std::exception();
 
 	Matrix A22(0, 0);
-	const static int64_t block_size = 200;
+
+	constexpr int64_t block_size = 3;
+
 	Matrix result(mat.sizer(), mat.sizec());
 
 	if (mat.sizer() <= block_size)
@@ -159,6 +160,7 @@ Matrix Cholesky_decomposition_block(const Matrix& mat)
 	}
 
 	result.insert_submatrix(Cholesky_decomposition_block(A22), block_size, block_size);
+
 	return result;
 }
 
@@ -170,7 +172,7 @@ std::pair<type,double> error_rate(const Matrix& lower_triangle_exp,const Matrix&
 	
 	type errormax = 0.0;
 	double relative_error = 0;
-	//int im, jm;
+	int im, jm;
 
 	for (int64_t i = 0; i < lower_triangle_calcul.sizer(); i++)
 	{
@@ -180,16 +182,16 @@ std::pair<type,double> error_rate(const Matrix& lower_triangle_exp,const Matrix&
 			type error2 = abs(lower_triangle_calcul[i][j] + lower_triangle_exp[i][j]);
 			if (std::min(error1, error2) > errormax)
 			{
-				//im = i;
-				//jm = j;
+				im = i;
+				jm = j;
 				errormax = std::min(error1, error2);
 				relative_error = abs(lower_triangle_calcul[i][j] - lower_triangle_exp[i][j]) / lower_triangle_exp[i][j] * 100;
 			}
 		}
 	}
-	//std::cout << im << ' ' << jm<<'\n';
-	//std::cout << lower_triangle_calcul[im][jm] << '\n';
-	//std::cout << lower_triangle_exp[im][jm] << '\n';
+	std::cout << im << ' ' << jm<<'\n';
+	std::cout << lower_triangle_calcul[im][jm] << '\n';
+	std::cout << lower_triangle_exp[im][jm] << '\n';
 	std::pair<type, double> result(errormax, abs(relative_error));
 	return result;
 }
