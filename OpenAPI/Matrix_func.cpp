@@ -107,10 +107,10 @@ M calc_L(const L_M& a, const M& b, size_t a_size, size_t b_columns)
 {
 	M ans(a_size, b_columns);
 
-#pragma omp parallel for
 	for (int64_t i = 0; i < a_size; i++)
 	{
-		for (size_t j = 0; j < b_columns; j++)
+#pragma omp parallel for
+		for (int64_t j = 0; j < b_columns; j++)
 		{
 			for (size_t k = 0; k < i; k++)
 			{
@@ -142,7 +142,7 @@ Matrix Cholesky_decomposition_block(const Matrix& mat)
 
 	Matrix A22(0, 0);
 
-	constexpr int64_t block_size = 3;
+	constexpr int64_t block_size = 256;
 
 	Matrix result(mat.sizer(), mat.sizec());
 
@@ -172,7 +172,7 @@ std::pair<type,double> error_rate(const Matrix& lower_triangle_exp,const Matrix&
 	
 	type errormax = 0.0;
 	double relative_error = 0;
-	int im, jm;
+	//int im = 0, jm = 0;
 
 	for (int64_t i = 0; i < lower_triangle_calcul.sizer(); i++)
 	{
@@ -182,16 +182,16 @@ std::pair<type,double> error_rate(const Matrix& lower_triangle_exp,const Matrix&
 			type error2 = abs(lower_triangle_calcul[i][j] + lower_triangle_exp[i][j]);
 			if (std::min(error1, error2) > errormax)
 			{
-				im = i;
-				jm = j;
+				/*im = i;
+				jm = j;*/
 				errormax = std::min(error1, error2);
 				relative_error = abs(lower_triangle_calcul[i][j] - lower_triangle_exp[i][j]) / lower_triangle_exp[i][j] * 100;
 			}
 		}
 	}
-	std::cout << im << ' ' << jm<<'\n';
+	/*std::cout << im << ' ' << jm<<'\n';
 	std::cout << lower_triangle_calcul[im][jm] << '\n';
-	std::cout << lower_triangle_exp[im][jm] << '\n';
+	std::cout << lower_triangle_exp[im][jm] << '\n';*/
 	std::pair<type, double> result(errormax, abs(relative_error));
 	return result;
 }

@@ -7,9 +7,9 @@
 
 using namespace std;
 
-const size_t N = 10;
+const size_t N = 4000;
 
-constexpr bool PRINT_MATRIX = false;
+constexpr bool PRINT_MATRIX = 0;
 
 int main() 
 {

@@ -94,9 +94,9 @@ Matrix Matrix::operator*(const Matrix& second)
 
 	Matrix result(this->sizer(), second.sizec());
 
+#pragma omp parallel for
 	for (int i = 0; i < this->sizer(); i++)
-	{
-		//#pragma omp parallel for
+	{	
 		for (int j = 0; j < this->sizec(); j++)
 		{
 			for (size_t k = 0; k < second.sizer(); k++)
@@ -159,6 +159,7 @@ Matrix& Matrix::transposition()
 			tmp[j][i] = (*this)[i][j];
 		}
 	}
+
 	*this = std::move(tmp);
 	return *this;
 }
