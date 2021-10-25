@@ -9,7 +9,7 @@ Matrix Cholesky_decomposition_block(Matrix &mat)
 
 	/*Matrix A22(0, 0);*/
 
-	int64_t block_size = 64;
+	int64_t block_size = 256;
 
 	Matrix result(mat.sizer(), mat.sizec());
 
@@ -22,7 +22,7 @@ Matrix Cholesky_decomposition_block(Matrix &mat)
 	//Matrix L11 = Cholesky_decomposition(mat.submatrix(0, block_size, 0, block_size));
 	//result.insert_submatrix(L11, 0, 0);
 	int64_t shift;
-	for (shift = 0; shift < mat.sizer() - block_size; shift += block_size)
+	for (shift = 0; shift < int64_t(mat.sizer() - block_size); shift += block_size)
 	{
 		result[shift][shift] = sqrt(mat[shift][shift]);
 

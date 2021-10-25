@@ -8,7 +8,7 @@
 
 using namespace std;
 
-const size_t N = 3000;
+const size_t N = 1000;
 
 constexpr bool PRINT_MATRIX = 0;
 
