@@ -43,7 +43,7 @@ Matrix Cholesky_decomposition_block(Matrix &mat)
 
 			result[i + shift][i + shift] = sqrt(mat[i + shift][i + shift] - sum1);
 
-			//#pragma omp parallel for
+			#pragma omp parallel for
 			for (int64_t j = i + 1; j < block_size; j++)
 			{
 				type sum = 0;
@@ -59,7 +59,7 @@ Matrix Cholesky_decomposition_block(Matrix &mat)
 		//result.insert_submatrix(L21, block_size, 0);
 		for (int64_t i = 0; i < block_size; i++)
 		{
-			//#pragma omp parallel for
+			#pragma omp parallel for
 			for (int64_t j = 0; j < mat.sizer() - block_size - shift; j++)
 			{
 				for (size_t k = 0; k < i; k++)
@@ -77,6 +77,7 @@ Matrix Cholesky_decomposition_block(Matrix &mat)
 
 
 		//A22 = mat.submatrix(block_size, mat.sizer(), block_size, mat.sizec()) - sqr(L21);
+		#pragma omp parallel for
 		for (int64_t i = 0; i < mat.sizer() - block_size - shift; i++)
 		{
 			for (int64_t j = 0; j < mat.sizec() - block_size - shift; j++)
@@ -95,7 +96,7 @@ Matrix Cholesky_decomposition_block(Matrix &mat)
 
 	result[shift][shift] = sqrt(mat[shift][shift]);
 
-	//#pragma omp parallel for
+
 	for (int64_t i = 1; i < block_size; i++)
 	{
 		result[i + shift][shift] = mat[i + shift][shift] / result[shift][shift];
@@ -104,7 +105,7 @@ Matrix Cholesky_decomposition_block(Matrix &mat)
 	for (int64_t i = 1; i < block_size; i++)
 	{
 		type sum1 = 0;
-		//#pragma omp parallel for reduction(+: sum1)
+		
 		for (int64_t j = 0; j < i; j++)
 		{
 			sum1 += result[i + shift][j + shift] * result[i + shift][j + shift];
@@ -112,7 +113,7 @@ Matrix Cholesky_decomposition_block(Matrix &mat)
 
 		result[i + shift][i + shift] = sqrt(mat[i + shift][i + shift] - sum1);
 
-		//#pragma omp parallel for
+		#pragma omp parallel for
 		for (int64_t j = i + 1; j < block_size; j++)
 		{
 			type sum = 0;

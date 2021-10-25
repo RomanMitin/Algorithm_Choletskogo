@@ -17,7 +17,7 @@ Matrix create_Lower_triangle_matrix(int64_t size)
 	for (int64_t i = 0; i < size; i++)
 	{
 		
-#pragma omp parallel for
+//#pragma omp parallel for
 		for (int64_t j = 0; j < size; j++)
 		{
 			if (i >= j)
@@ -71,7 +71,7 @@ Matrix Cholesky_decomposition(const Matrix& mat)
 	l[0][0] = sqrt(mat[0][0]);
 
 
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int64_t i = 1; i < l.sizer(); i++)
 	{
 		l[i][0] = mat[i][0] / l[0][0];
@@ -80,7 +80,7 @@ Matrix Cholesky_decomposition(const Matrix& mat)
 	for (int64_t i = 1; i < l.sizer(); i++)
 	{
 		type sum1 = 0;
-//#pragma omp parallel for reduction(+: sum1)
+#pragma omp parallel for reduction(+: sum1)
 		for (int64_t j = 0; j < i; j++)
 		{
 			sum1 += l[i][j] * l[i][j];
@@ -88,7 +88,7 @@ Matrix Cholesky_decomposition(const Matrix& mat)
 
 		l[i][i] = sqrt(mat[i][i] - sum1);
 
-//#pragma omp parallel for
+#pragma omp parallel for
 		for (int64_t j = i + 1; j < l.sizer(); j++)
 		{
 			type sum = 0;

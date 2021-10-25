@@ -8,7 +8,7 @@
 
 using namespace std;
 
-const size_t N = 1000;
+const size_t N = 4000;
 
 constexpr bool PRINT_MATRIX = 0;
 
@@ -18,6 +18,7 @@ int main()
 	
 	time_t start = clock();
 	Matrix l = create_Lower_triangle_matrix(N);
+
 	if constexpr (PRINT_MATRIX) { cout << l; }
 	Matrix a = sqr(l);
 	cout << "Time to multiply matrix: ";
