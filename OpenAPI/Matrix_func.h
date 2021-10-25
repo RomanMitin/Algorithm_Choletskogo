@@ -10,6 +10,6 @@ Matrix create_positive_definite_matrix(size_t size);
 
 Matrix Cholesky_decomposition(const Matrix& mat);
 
-Matrix Cholesky_decomposition_block(const Matrix& mat);
+//Matrix Cholesky_decomposition_block(const Matrix& mat);
 
 std::pair<type, double> error_rate(const Matrix& lower_triangle_exp, const Matrix& lower_triangle_calcul);

@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Choletsky_block_algorithm.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Matrix_func.cpp">
@@ -147,6 +148,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Choletsky_block_algorithm.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Matrix_func.h" />
   </ItemGroup>

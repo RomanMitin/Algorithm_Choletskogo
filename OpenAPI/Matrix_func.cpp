@@ -13,9 +13,10 @@ double randd()
 Matrix create_Lower_triangle_matrix(int64_t size)
 {
 	Matrix result(size,size);
-
+	
 	for (int64_t i = 0; i < size; i++)
 	{
+		
 #pragma omp parallel for
 		for (int64_t j = 0; j < size; j++)
 		{
@@ -70,7 +71,7 @@ Matrix Cholesky_decomposition(const Matrix& mat)
 	l[0][0] = sqrt(mat[0][0]);
 
 
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int64_t i = 1; i < l.sizer(); i++)
 	{
 		l[i][0] = mat[i][0] / l[0][0];
@@ -79,7 +80,7 @@ Matrix Cholesky_decomposition(const Matrix& mat)
 	for (int64_t i = 1; i < l.sizer(); i++)
 	{
 		type sum1 = 0;
-#pragma omp parallel for reduction(+: sum1)
+//#pragma omp parallel for reduction(+: sum1)
 		for (int64_t j = 0; j < i; j++)
 		{
 			sum1 += l[i][j] * l[i][j];
@@ -87,7 +88,7 @@ Matrix Cholesky_decomposition(const Matrix& mat)
 
 		l[i][i] = sqrt(mat[i][i] - sum1);
 
-#pragma omp parallel for
+//#pragma omp parallel for
 		for (int64_t j = i + 1; j < l.sizer(); j++)
 		{
 			type sum = 0;
@@ -109,7 +110,7 @@ M calc_L(const L_M& a, const M& b, size_t a_size, size_t b_columns)
 
 	for (int64_t i = 0; i < a_size; i++)
 	{
-#pragma omp parallel for
+//#pragma omp parallel for
 		for (int64_t j = 0; j < b_columns; j++)
 		{
 			for (size_t k = 0; k < i; k++)
@@ -135,34 +136,34 @@ Matrix findL21(const Matrix& L11, Matrix A21)
 }
 
 
-Matrix Cholesky_decomposition_block(const Matrix& mat)
-{
-	if (mat.sizec() != mat.sizer())
-		throw std::exception();
-
-	Matrix A22(0, 0);
-
-	constexpr int64_t block_size = 256;
-
-	Matrix result(mat.sizer(), mat.sizec());
-
-	if (mat.sizer() <= block_size)
-	{
-		return Cholesky_decomposition(mat);
-	}
-
-	{
-		Matrix L11 = Cholesky_decomposition(mat.submatrix(0, block_size, 0, block_size));
-		result.insert_submatrix(L11, 0, 0);
-		Matrix L21 = findL21(L11, mat.submatrix(block_size, mat.sizer(), 0, block_size));
-		result.insert_submatrix(L21, block_size, 0);
-		A22 = mat.submatrix(block_size, mat.sizer(), block_size, mat.sizec()) - sqr(L21);
-	}
-
-	result.insert_submatrix(Cholesky_decomposition_block(A22), block_size, block_size);
-
-	return result;
-}
+//Matrix Cholesky_decomposition_block(const Matrix& mat)
+//{
+//	if (mat.sizec() != mat.sizer())
+//		throw std::exception();
+//
+//	Matrix A22(0, 0);
+//
+//	constexpr int64_t block_size = 256;//192
+//
+//	Matrix result(mat.sizer(), mat.sizec());
+//
+//	if (mat.sizer() <= block_size)
+//	{
+//		return Cholesky_decomposition(mat);
+//	}
+//
+//	{
+//		Matrix L11 = Cholesky_decomposition(mat.submatrix(0, block_size, 0, block_size));
+//		result.insert_submatrix(L11, 0, 0);
+//		Matrix L21 = findL21(L11, mat.submatrix(block_size, mat.sizer(), 0, block_size));
+//		result.insert_submatrix(L21, block_size, 0);
+//		A22 = mat.submatrix(block_size, mat.sizer(), block_size, mat.sizec()) - sqr(L21);
+//	}
+//
+//	result.insert_submatrix(Cholesky_decomposition_block(A22), block_size, block_size);
+//
+//	return result;
+//}
 
 std::pair<type,double> error_rate(const Matrix& lower_triangle_exp,const Matrix& lower_triangle_calcul)
 {

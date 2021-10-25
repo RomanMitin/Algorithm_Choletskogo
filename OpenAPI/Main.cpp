@@ -4,33 +4,35 @@
 #include<vector>
 #include"Matrix.h"
 #include"Matrix_func.h"
+#include"Choletsky_block_algorithm.h"
 
 using namespace std;
 
-const size_t N = 4000;
+const size_t N = 3000;
 
 constexpr bool PRINT_MATRIX = 0;
 
 int main() 
 {
-
 	srand(10);
+	
 	time_t start = clock();
 	Matrix l = create_Lower_triangle_matrix(N);
 	if constexpr (PRINT_MATRIX) { cout << l; }
 	Matrix a = sqr(l);
 	cout << "Time to multiply matrix: ";
-	cout << (clock() - start) / 1000.0 << "\n\n";
+	cout << (clock() - start) / double(CLOCKS_PER_SEC) << "\n\n";
 	if constexpr (PRINT_MATRIX) { cout << a; }
 
 	start = clock();
 	Matrix b = Cholesky_decomposition(a);
-	cout << "Cholesky decomposition algorithm time: " << (clock() - start) / 1000.0 << "\n\n";
+	cout << "Cholesky decomposition algorithm time: " << (clock() - start) / double(CLOCKS_PER_SEC) << "\n\n";
 
 	start = clock();
 	Matrix c = Cholesky_decomposition_block(a);
-	if constexpr (PRINT_MATRIX) { cout << b; cout << c; }
 	time_t finish = clock();
+	if constexpr (PRINT_MATRIX) { cout << b; cout << c; }
+	
 
 	auto err = error_rate(l, b);
 	
@@ -44,3 +46,4 @@ int main()
 
 	return 0;
 }
+
