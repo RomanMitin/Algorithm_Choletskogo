@@ -62,7 +62,7 @@ public:
 
 	void insert_submatrix(const Matrix& submat, size_t row_start, size_t col_start);
 
-	friend std::ostream& operator<<(std::ostream& str, Matrix mat);
+	friend std::ostream& operator<<(std::ostream& str,const Matrix& mat);
 
 	void fillup_rand();
 

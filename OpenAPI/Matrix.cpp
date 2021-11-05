@@ -15,10 +15,7 @@ Matrix::Matrix(size_t _sizer, size_t _sizec, type val)
 	:_sizer(_sizer), _sizec(_sizec)
 {
 	p = new type[_sizer * _sizec];
-	for (size_t i = 0; i < _sizer * _sizec; i++)
-	{
-		p[i] = val;
-	}
+	memset(p, val, _sizec * _sizer * sizeof(type));
 }
 
 Matrix::Matrix(const Matrix& second)
@@ -77,7 +74,6 @@ Matrix& Matrix::operator=(Matrix&& second) noexcept
 
 	delete[] p;
 	
-
 	_sizer = second._sizer;
 	_sizec = second._sizec;
 	p = second.p;
@@ -202,7 +198,7 @@ void Matrix::insert_submatrix(const Matrix& submat, size_t row_start, size_t col
 	}
 }
 
-std::ostream& operator<<(std::ostream& str, Matrix mat)
+std::ostream& operator<<(std::ostream& str,const Matrix& mat)
 {
 	for (size_t i = 0; i < mat.sizer(); i++)
 	{
