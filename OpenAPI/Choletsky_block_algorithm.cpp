@@ -84,7 +84,7 @@ Matrix Cholesky_decomposition_block(const Matrix &mat)
 				}
 				result[i + block_size + shift][j + block_size + shift] -= elem;
 			}
-		}
+		} 
 	}
 
 	block_size = result.sizer() - shift;

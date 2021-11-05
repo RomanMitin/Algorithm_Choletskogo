@@ -212,6 +212,18 @@ std::ostream& operator<<(std::ostream& str,const Matrix& mat)
 	return str;
 }
 
+std::istream& operator>>(std::istream& str, Matrix& mat)
+{
+	for (size_t i = 0; i < mat.sizer(); i++)
+	{
+		for (size_t j = 0; j < mat.sizec(); j++)
+		{
+			str >> mat[i][j];
+		}
+	}
+	return str;
+}
+
 void Matrix::fillup_rand()
 {
 	for (size_t i = 0; i < _sizec * _sizer; i++)
