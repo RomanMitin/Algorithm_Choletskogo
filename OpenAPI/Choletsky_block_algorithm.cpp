@@ -131,7 +131,7 @@ Matrix Cholesky_decomposition_block(const Matrix &mat)
 	return result;
 }
 
-Matrix Cholesky_decomposition_block2(const Matrix& mat)
+Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat)
 {
 	if (mat.sizec() != mat.sizer())
 		throw std::exception();
@@ -148,6 +148,7 @@ Matrix Cholesky_decomposition_block2(const Matrix& mat)
 		result[shift][shift] = sqrt(result[shift][shift]);
 
 		//#pragma omp parallel for
+		#pragma omp simd
 		for (int64_t i = 1; i < block_size; i++)
 		{
 			result[i + shift][shift] = result[i + shift][shift] / result[shift][shift];
@@ -156,7 +157,7 @@ Matrix Cholesky_decomposition_block2(const Matrix& mat)
 		for (int64_t i = 1; i < block_size; i++)
 		{
 			type sum1 = 0;
-			//#pragma omp SIMD reduction(+: sum1)
+			#pragma omp simd reduction( + : sum1)
 			for (int64_t j = 0; j < i; j++)
 			{
 				sum1 += result[i + shift][j + shift] * result[i + shift][j + shift];
@@ -168,6 +169,7 @@ Matrix Cholesky_decomposition_block2(const Matrix& mat)
 			for (int64_t j = i + 1; j < block_size; j++)
 			{
 				type sum = 0;
+				#pragma omp simd reduction( + : sum)
 				for (int64_t p = 0; p < i; p++)
 				{
 					sum += result[i + shift][p + shift] * result[j + shift][p + shift];
@@ -185,6 +187,7 @@ Matrix Cholesky_decomposition_block2(const Matrix& mat)
 			{
 				type tmp = result[j + block_size + shift][i + shift];
 				result[j + block_size + shift][i + shift] = 0;
+				#pragma omp simd
 				for (size_t k = 0; k < i; k++)
 				{
 					result[j + block_size + shift][i + shift] += \
@@ -203,14 +206,15 @@ Matrix Cholesky_decomposition_block2(const Matrix& mat)
 		int block_sz_n = 64, block_sz_m = 64;
 		int n1 = result.sizec() - block_size - shift;
 		int m1 = block_size;
-		int n2 = m1, m2 = n1;
+		int m2 = n1;
 		#pragma omp parallel for
 		for (int ib = 0; ib < n1; ib += block_sz_n)
 			for (int kb = 0; kb < m1; kb += block_sz_m)
 				for (int jb = 0; jb < m2; jb += block_sz_n)
 					for (int i = ib; i < std::min(ib + block_sz_n, n1); ++i)
-						for (int k = kb; k < std::min(kb + block_sz_m, m1); ++k)
-							for (int j = jb; j < std::min(jb + block_sz_n, m2); ++j)
+						for (int j = jb; j < std::min(jb + block_sz_n, m2); ++j)
+							#pragma omp simd
+							for (int k = kb; k < std::min(kb + block_sz_m, m1); ++k)
 								result[i + block_size + shift][j + block_size + shift] -= \
 								result[i + block_size + shift][k + shift] * result[j + block_size + shift][k + shift];
 	}
@@ -220,6 +224,7 @@ Matrix Cholesky_decomposition_block2(const Matrix& mat)
 	result[shift][shift] = sqrt(result[shift][shift]);
 
 	//Обычный алгоритм Холетского для последнего блока 
+	#pragma omp simd
 	for (int64_t i = 1; i < block_size; i++)
 	{
 		result[i + shift][shift] = result[i + shift][shift] / result[shift][shift];
@@ -228,7 +233,7 @@ Matrix Cholesky_decomposition_block2(const Matrix& mat)
 	for (int64_t i = 1; i < block_size; i++)
 	{
 		type sum1 = 0;
-
+		#pragma omp simd reduction( + : sum1)
 		for (int64_t j = 0; j < i; j++)
 		{
 			sum1 += result[i + shift][j + shift] * result[i + shift][j + shift];

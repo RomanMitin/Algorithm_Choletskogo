@@ -9,14 +9,17 @@ using namespace std;
 int main()
 {
 	srand(0);
-	#pragma omp parallel for
-	for (int i = 1000; i <= 10000; i+=1000)
+	#pragma omp parallel for schedule(dynamic)
+	for (int i = 10000; i >= 1000; i-=1000)
 	{
-		Matrix a = create_positive_definite_matrix(i);
+		_sleep(omp_get_thread_num() * 50);
+		cout << omp_get_thread_num() << " is computing matrix with size " << i << '\n';
+		Matrix l = create_Lower_triangle_matrix(i);
+		Matrix a = sqr(l);
 		ofstream file;
 		string file_name = "Pos_def_Matrix_size_" + to_string(i);
 		file.open(file_name);
-		file << a;
+		file << l << a;
 		file.close();
 		std::cout << "Done: " << i << '\n';
 	}

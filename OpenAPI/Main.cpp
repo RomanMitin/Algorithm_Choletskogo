@@ -13,8 +13,7 @@ using namespace std;
 
 const size_t N = 1000;
 
-constexpr bool PRINT_MATRIX = 1;
-constexpr bool CHECK_ANSWER = 0;
+constexpr bool PRINT_MATRIX = 0;
 
 int main() 
 {
@@ -23,10 +22,11 @@ int main()
 	cout.precision(3);
 	
 	auto start = std::chrono::high_resolution_clock::now();
-	Matrix a(N, N), l(0, 0);
-	if (N < 1000 || CHECK_ANSWER)
+
+	Matrix a(N, N), l(N, N);
+	if (N < 1000)
 	{
-		Matrix l = create_Lower_triangle_matrix(N);
+		l = create_Lower_triangle_matrix(N);
 		a = sqr(l);
 	}
 	else
@@ -36,6 +36,7 @@ int main()
 		file.open("../Create_positive_def_Matix/" + file_name);
 		if (file.is_open())
 		{
+			file >> l;
 			file >> a;
 		}
 		else
@@ -45,8 +46,8 @@ int main()
 
 	if constexpr (PRINT_MATRIX) { cout << l; }
 
-	cout << "Time to multiply matrix: ";
 	auto end = std::chrono::high_resolution_clock::now();
+	cout << "Time to create matrix: ";
 	std::chrono::duration<double> duration = end - start;
 	cout << duration.count() << "\n\n";
 	if constexpr (PRINT_MATRIX) { cout << a; }
@@ -58,23 +59,23 @@ int main()
 	cout << "Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
 
 	start = std::chrono::high_resolution_clock::now();
-	Matrix c = Cholesky_decomposition_block2(a);
+	Matrix c = Cholesky_decomposition_block_with_matrixblock_mult(a);
 	end = std::chrono::high_resolution_clock::now();
 	duration = end - start;
 	if constexpr (PRINT_MATRIX) { cout << b; cout << c; }
 	
-	if constexpr (CHECK_ANSWER)
-	{
-		auto err = error_rate(l, b);
+	cout << "Block Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
 
-		cout << "Absolute error in Cholesky decomposition algorithm: " << err.first << '\n';
-		cout << "Relative error in Cholesky decomposition algorithm: " << err.second << "%\n\n";
 
-		auto err2 = error_rate(l, c);
-		cout << "block Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
-		cout << "Absolute error in block Cholesky decomposition algorithm: " << err2.first << '\n';
-		cout << "Relative error in block Cholesky decomposition algorithm: " << err2.second << "%\n";
-	}
+	auto err = error_rate(l, b);
+
+	cout << "Absolute error in Cholesky decomposition algorithm: " << err.first << '\n';
+	cout << "Relative error in Cholesky decomposition algorithm: " << err.second << "%\n\n";
+
+	auto err2 = error_rate(l, c);
+		
+	cout << "Absolute error in block Cholesky decomposition algorithm: " << err2.first << '\n';
+	cout << "Relative error in block Cholesky decomposition algorithm: " << err2.second << "%\n";
 
 	return 0;
 }

@@ -4,4 +4,4 @@
 
 Matrix Cholesky_decomposition_block(const Matrix& mat);
 
-Matrix Cholesky_decomposition_block2(const Matrix& mat);
+Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat);

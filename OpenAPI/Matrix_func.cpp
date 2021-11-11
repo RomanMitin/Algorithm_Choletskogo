@@ -37,22 +37,20 @@ Matrix create_Lower_triangle_matrix(int64_t size)
 
 Matrix sqr(const Matrix& mat)
 {
-	/*if (mat.sizec() != mat.sizer())
-		throw std::exception();*/
-
 	Matrix result(mat.sizer(),mat.sizer());
 
+	int block_sz_n = 64, block_sz_m = 64;
+	int n1 = mat.sizec(), m1 = mat.sizer(), m2 = mat.sizec();
+
 #pragma omp parallel for
-	for (int64_t i = 0; i < result.sizer(); i++)
-	{
-		for (int64_t j = 0; j < result.sizec(); j++)
-		{
-			for (int64_t k = 0; k < mat.sizec(); k++)
-			{
-				result[i][j] += mat[i][k] * mat[j][k];
-			}
-		}
-	}
+	for (int ib = 0; ib < n1; ib += block_sz_n)
+		for (int kb = 0; kb < m1; kb += block_sz_m)
+			for (int jb = 0; jb < m2; jb += block_sz_n)
+				for (int i = ib; i < std::min(ib + block_sz_n, n1); ++i)
+					for (int j = jb; j < std::min(jb + block_sz_n, m2); ++j)
+						#pragma omp simd
+						for (int k = kb; k < std::min(kb + block_sz_m, m1); ++k)
+							result[i][j] += mat[i][k] * mat[j][k];
 
 	return result;
 }

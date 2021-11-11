@@ -65,6 +65,8 @@ Matrix& Matrix::operator=(const Matrix& second)
 	{
 		p[i] = second.p[i];
 	}
+
+	return *this;
 }
 
 Matrix& Matrix::operator=(Matrix&& second) noexcept
@@ -81,6 +83,8 @@ Matrix& Matrix::operator=(Matrix&& second) noexcept
 	second.p = nullptr;
 	second._sizec = 0;
 	second._sizer = 0;
+
+	return *this;
 }
 
 Matrix Matrix::operator*(const Matrix& second)
