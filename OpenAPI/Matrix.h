@@ -16,9 +16,9 @@ public:
 
 	Matrix(Matrix&& second) noexcept;
 
-	type* operator[](size_t i);
+	type* operator[](size_t i) noexcept;
 
-	const type* operator[](size_t i) const;
+	const type* operator[](size_t i) const noexcept;
 
 	Matrix& operator=(const Matrix& second);
 
@@ -39,6 +39,8 @@ public:
 	friend std::ostream& operator<<(std::ostream& str,const Matrix& mat);
 
 	friend std::istream& operator>>(std::istream& str, Matrix& mat);
+
+	friend void mklcholetsky_algorithm(Matrix& mat);
 
 	void fillup_rand();
 

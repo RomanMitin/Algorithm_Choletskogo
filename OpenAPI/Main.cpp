@@ -5,78 +5,78 @@
 #include<vector>
 #include<string>
 #include<chrono>
+#include<mkl.h>
 #include"Matrix.h"
 #include"Matrix_func.h"
 #include"Choletsky_block_algorithm.h"
+#include"Tests.h"
+
 
 using namespace std;
 
-const size_t N = 1000;
+const size_t N = 4;
 
-constexpr bool PRINT_MATRIX = 0;
+constexpr bool PRINT_MATRIX = 1;
+constexpr bool HOME = 1;
 
-int main() 
+int main(int argc,char* argv[]) 
 {
-	srand(10);
-	cout << fixed;
-	cout.precision(3);
+	// argv[0] = размер матриц 
+	// argv[1] = число потоков, если 0 == число потоков по умолчанию
+	// argv[2] = режим запуска, какая функция вызывается
+	//	1 == обычный алгоритм Холетского
+	//	2 == Блочный алгоритм с блочный умножением матриц
+	//  3 == mkl
+	// argv[3][0] = размер блока для блочного алгоритма Холетского
+	// argv[3][1] = размер блока по строке для блочного умножения матриц
+	// argv[3][2] = размер блока по столбцу для блочного умножения матриц
+	//
 	
-	auto start = std::chrono::high_resolution_clock::now();
-
-	Matrix a(N, N), l(N, N);
-	if (N < 1000)
+	if constexpr (!HOME)
 	{
-		l = create_Lower_triangle_matrix(N);
-		a = sqr(l);
+		if (argc < 3)
+		{
+			cerr << "Too few parameters\n";
+			throw std::exception("Too few parameters");
+		}
+		size_t N = argv[0][0] - '0';
+		Matrix l(N, N), mat(N, N);
+		try
+		{
+			Get_matrix_form_file(mat, l);
+		}
+		catch (...)
+		{
+			l = create_Lower_triangle_matrix(N);
+			mat = sqr(l);
+		}
+
+		size_t num_threads = argv[1][0] - '0';
+		int alg = argv[2][0] - '0';
+		if (num_threads)
+		{
+			omp_set_num_threads(num_threads);
+		}
+		
+		double time;
+		if (argc != 4)
+		{
+			start_alg(mat, alg, time);
+		}
+		else
+		{
+			int64_t bl1 = argv[3][0] - '0';
+			int bl2 = argv[3][1] - '0';
+			int bl3 = argv[3][2] - '0';
+			start_alg(mat, alg, time, bl1, bl2, bl3);
+		}
+
 	}
 	else
 	{
-		string file_name = "Pos_def_Matrix_size_" + to_string(N);
-		ifstream file;
-		file.open("../Create_positive_def_Matix/" + file_name);
-		if (file.is_open())
-		{
-			file >> l;
-			file >> a;
-		}
-		else
-			throw std::exception();
-		file.close();
+		start_home(PRINT_MATRIX,N);
 	}
-
-	if constexpr (PRINT_MATRIX) { cout << l; }
-
-	auto end = std::chrono::high_resolution_clock::now();
-	cout << "Time to create matrix: ";
-	std::chrono::duration<double> duration = end - start;
-	cout << duration.count() << "\n\n";
-	if constexpr (PRINT_MATRIX) { cout << a; }
-
-	start = std::chrono::high_resolution_clock::now();
-	Matrix b = Cholesky_decomposition(a);
-	end = std::chrono::high_resolution_clock::now();
-	duration = end - start;
-	cout << "Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
-
-	start = std::chrono::high_resolution_clock::now();
-	Matrix c = Cholesky_decomposition_block_with_matrixblock_mult(a);
-	end = std::chrono::high_resolution_clock::now();
-	duration = end - start;
-	if constexpr (PRINT_MATRIX) { cout << b; cout << c; }
 	
-	cout << "Block Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
-
-
-	auto err = error_rate(l, b);
-
-	cout << "Absolute error in Cholesky decomposition algorithm: " << err.first << '\n';
-	cout << "Relative error in Cholesky decomposition algorithm: " << err.second << "%\n\n";
-
-	auto err2 = error_rate(l, c);
-		
-	cout << "Absolute error in block Cholesky decomposition algorithm: " << err2.first << '\n';
-	cout << "Relative error in block Cholesky decomposition algorithm: " << err2.second << "%\n";
-
 	return 0;
 }
 

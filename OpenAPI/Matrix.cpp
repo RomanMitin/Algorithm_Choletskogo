@@ -5,10 +5,6 @@
 #define RAND_MAX 0x7fff
 #endif // !RAND_MAX
 
-//typedef double type;
-
-	//Matrix() {};
-
 double randd();
 
 Matrix::Matrix(size_t _sizer, size_t _sizec, type val)
@@ -36,17 +32,13 @@ Matrix::Matrix(Matrix&& second) noexcept
 	second._sizer = 0;
 }
 
-type* Matrix::operator[](size_t i)
+__forceinline type* Matrix::operator[](size_t i) noexcept
 {
-	if (i >= _sizer)
-		throw std::exception();
 	return p + i * _sizec;
 }
 
-const type* Matrix::operator[](size_t i) const
+__forceinline const type* Matrix::operator[](size_t i) const noexcept
 {
-	if (i >= _sizer)
-		throw std::exception();
 	return p + i * _sizec;
 }
 
@@ -208,11 +200,11 @@ std::ostream& operator<<(std::ostream& str,const Matrix& mat)
 	{
 		for (size_t j = 0; j < mat.sizec(); j++)
 		{
-			str << mat[i][j] << '\t';
+			str << mat[i][j];// << ' ';
 		}
-		str << '\n';
+		//str << '\n';
 	}
-	str << '\n';
+	//str << '\n';
 	return str;
 }
 

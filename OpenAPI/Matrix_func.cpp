@@ -1,8 +1,14 @@
 #include<omp.h>
 #include<cmath>
 #include<algorithm>
+#include<mkl.h>
 #include"Matrix_func.h"
 
+void mklcholetsky_algorithm(Matrix& mat)
+{
+	int info;
+	dpotrf("L", reinterpret_cast<int*>(&mat._sizec), mat.p, reinterpret_cast<int*>(&mat._sizec), &info);
+}
 
 double randd()
 {
@@ -27,7 +33,7 @@ Matrix create_Lower_triangle_matrix(int64_t size)
 					result[i][j] = randd();
 				}
 				if (i == j)
-					result[i][j] += 100;
+					result[i][j] += 1000;
 			}
 		}
 	}
@@ -48,9 +54,19 @@ Matrix sqr(const Matrix& mat)
 			for (int jb = 0; jb < m2; jb += block_sz_n)
 				for (int i = ib; i < std::min(ib + block_sz_n, n1); ++i)
 					for (int j = jb; j < std::min(jb + block_sz_n, m2); ++j)
+					{
+						type sum2 = 0;
+						#pragma omp simd reduction( + : sum2) 
+						for (int k = kb; k < std::min(kb + block_sz_m, m1); ++k)
+						{
+							sum2 += mat[i][k] * mat[j][k];
+						}
+						result[i][j] += sum2;
+					}
+					/*for (int j = jb; j < std::min(jb + block_sz_n, m2); ++j)
 						#pragma omp simd
 						for (int k = kb; k < std::min(kb + block_sz_m, m1); ++k)
-							result[i][j] += mat[i][k] * mat[j][k];
+							result[i][j] += mat[i][k] * mat[j][k];*/
 
 	return result;
 }

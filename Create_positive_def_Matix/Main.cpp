@@ -18,7 +18,7 @@ int main()
 		Matrix a = sqr(l);
 		ofstream file;
 		string file_name = "Pos_def_Matrix_size_" + to_string(i);
-		file.open(file_name);
+		file.open(file_name,ios::binary);
 		file << l << a;
 		file.close();
 		std::cout << "Done: " << i << '\n';
