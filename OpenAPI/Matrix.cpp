@@ -196,28 +196,44 @@ void Matrix::insert_submatrix(const Matrix& submat, size_t row_start, size_t col
 
 std::ostream& operator<<(std::ostream& str,const Matrix& mat)
 {
-	for (size_t i = 0; i < mat.sizer(); i++)
-	{
-		for (size_t j = 0; j < mat.sizec(); j++)
-		{
-			str << mat[i][j];// << ' ';
-		}
-		//str << '\n';
-	}
-	//str << '\n';
+	str.write(reinterpret_cast<char*>(mat.p), sizeof(type) * mat.sizec() * mat.sizer());
+	//for (size_t i = 0; i < mat.sizer(); i++)
+	//{
+	//	for (size_t j = 0; j < mat.sizec(); j++)
+	//	{
+	//		str << mat[i][j];// << ' ';
+	//	}
+	//	//str << '\n';
+	//}
+	////str << '\n';
 	return str;
 }
 
 std::istream& operator>>(std::istream& str, Matrix& mat)
 {
-	for (size_t i = 0; i < mat.sizer(); i++)
+
+	str.read(reinterpret_cast<char*>(mat.p), sizeof(type) * mat.sizec() * mat.sizer());
+	/*for (size_t i = 0; i < mat.sizer(); i++)
 	{
 		for (size_t j = 0; j < mat.sizec(); j++)
 		{
 			str >> mat[i][j];
 		}
-	}
+	}*/
 	return str;
+}
+
+void Matrix::output()
+{
+	for (size_t i = 0; i < _sizer; i++)
+	{
+		for (size_t j = 0; j < _sizec; j++)
+		{
+			std::cout << (*this)[i][j] << '\t';
+		}
+		std::cout << '\n';
+	}
+	std::cout << '\n';
 }
 
 void Matrix::fillup_rand()

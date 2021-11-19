@@ -14,32 +14,41 @@
 
 using namespace std;
 
-const size_t N = 4;
+const size_t N = 5000;
 
-constexpr bool PRINT_MATRIX = 1;
-constexpr bool HOME = 1;
+constexpr bool PRINT_MATRIX = 0;
+constexpr bool HOME = 0;
 
 int main(int argc,char* argv[]) 
 {
-	// argv[0] = размер матриц 
-	// argv[1] = число потоков, если 0 == число потоков по умолчанию
-	// argv[2] = режим запуска, какая функция вызывается
+	//argc = 4;
+	//argv = new char* [4];
+	//argv[1] = new char[5];
+	//argv[1] = const_cast<char*>("5000");
+	//argv[2] = new char[2];
+	//argv[2] = const_cast<char*>("0");
+	//argv[3] = new char[2];
+	//argv[3] = const_cast<char*>("2");
+
+	// argv[1] = размер матриц 
+	// argv[2] = число потоков, если 0 == число потоков по умолчанию
+	// argv[3] = режим запуска, какая функция вызывается
 	//	1 == обычный алгоритм Холетского
 	//	2 == Блочный алгоритм с блочный умножением матриц
 	//  3 == mkl
-	// argv[3][0] = размер блока для блочного алгоритма Холетского
-	// argv[3][1] = размер блока по строке для блочного умножения матриц
-	// argv[3][2] = размер блока по столбцу для блочного умножения матриц
+	// argv[4] = размер блока для блочного алгоритма Холетского
+	// argv[5] = размер блока по строке для блочного умножения матриц
+	// argv[6] = размер блока по столбцу для блочного умножения матриц
 	//
 	
-	if constexpr (!HOME)
+	if (!HOME)
 	{
-		if (argc < 3)
+		if (argc < 4)
 		{
 			cerr << "Too few parameters\n";
-			throw std::exception("Too few parameters");
+			throw std::exception();
 		}
-		size_t N = argv[0][0] - '0';
+		size_t N = atoi(argv[1]);
 		Matrix l(N, N), mat(N, N);
 		try
 		{
@@ -51,26 +60,32 @@ int main(int argc,char* argv[])
 			mat = sqr(l);
 		}
 
-		size_t num_threads = argv[1][0] - '0';
-		int alg = argv[2][0] - '0';
+		size_t num_threads = atoi(argv[2]);
+		int alg = atoi(argv[3]);
 		if (num_threads)
 		{
 			omp_set_num_threads(num_threads);
 		}
 		
 		double time;
-		if (argc != 4)
+		if (argc < 5)
 		{
 			start_alg(mat, alg, time);
 		}
 		else
 		{
-			int64_t bl1 = argv[3][0] - '0';
-			int bl2 = argv[3][1] - '0';
-			int bl3 = argv[3][2] - '0';
+			int64_t bl1 = atoi(argv[4]);
+			int bl2 = atoi(argv[5]);
+			int bl3 = atoi(argv[6]);
 			start_alg(mat, alg, time, bl1, bl2, bl3);
 		}
 
+		string s = "alg_" + to_string(alg) + "__number_of_threads_" + to_string(num_threads) + ".txt";
+		ofstream out;
+		out.open(s, ios::app);
+		out.precision(4);
+		out << "Matrix_size:" << N << " " << time << '\n';
+		out.close();
 	}
 	else
 	{

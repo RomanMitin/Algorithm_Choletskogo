@@ -1,13 +1,18 @@
 #include<omp.h>
 #include<cmath>
 #include<algorithm>
-#include<mkl.h>
+//#include<mkl.h>
 #include"Matrix_func.h"
 
 void mklcholetsky_algorithm(Matrix& mat)
 {
 	int info;
-	dpotrf("L", reinterpret_cast<int*>(&mat._sizec), mat.p, reinterpret_cast<int*>(&mat._sizec), &info);
+	//dpotrf("L", reinterpret_cast<int*>(&mat._sizec), mat.p, reinterpret_cast<int*>(&mat._sizec), &info);
+ #pragma omp parallel for
+	for (int i = 0; i < mat.sizec() - 1; i++)
+	{
+		memset(mat[i] + i + 1, 0, sizeof(type) * (mat.sizer() - i - 1));
+	}
 }
 
 double randd()
@@ -33,7 +38,7 @@ Matrix create_Lower_triangle_matrix(int64_t size)
 					result[i][j] = randd();
 				}
 				if (i == j)
-					result[i][j] += 1000;
+					result[i][j] += 300;
 			}
 		}
 	}
@@ -76,10 +81,10 @@ Matrix create_positive_definite_matrix(size_t size)
 	return sqr(create_Lower_triangle_matrix(size));
 }
 
-Matrix Cholesky_decomposition(const Matrix& mat)
+Matrix Cholesky_decomposition(const Matrix& mat) noexcept
 {
-	if (mat.sizec() != mat.sizer())
-		throw std::exception();
+	/*if (mat.sizec() != mat.sizer())
+		throw std::exception();*/
 
 	Matrix l(mat.sizer(),mat.sizec());
 	l[0][0] = sqrt(mat[0][0]);

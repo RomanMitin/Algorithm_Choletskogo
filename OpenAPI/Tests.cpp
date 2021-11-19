@@ -5,11 +5,11 @@
 #include<vector>
 #include<string>
 #include<chrono>
+#include<mkl.h>
 #include"Matrix.h"
 #include"Matrix_func.h"
 #include"Choletsky_block_algorithm.h"
 #include"Tests.h"
-#include<mkl.h>
 
 using namespace std;
 
@@ -32,6 +32,12 @@ void Get_matrix_form_file(Matrix& a, Matrix& l)
 
 Matrix start_alg(Matrix& mat, int alg, double& time, int64_t block1, int block2, int block3)
 {
+	if (block1 < 0 || block2 < 0 || block3 < 0)
+	{
+		cerr << "Block size is negative\n";
+		throw std::exception();
+	}
+
 	Matrix result(0,0);
 
 	auto start = std::chrono::high_resolution_clock::now();
@@ -49,7 +55,7 @@ Matrix start_alg(Matrix& mat, int alg, double& time, int64_t block1, int block2,
 		break;
 	default:
 		cerr << "Wrong algo in argv[2][0]\n";
-		throw std::exception("Wrong algo in argv[2][0]");
+		throw std::exception();
 		break;
 	}
 	auto end = std::chrono::high_resolution_clock::now();
@@ -63,7 +69,22 @@ Matrix start_alg(Matrix& mat, int alg, double& time, int64_t block1, int block2,
 	return result;
 }
 
-
+int to_int(char* s)
+{
+	int result=0;
+	int i = 0;
+	while (s[i] != '\0')
+	{
+		i++;
+	}
+	i--;
+	while (i > -1)
+	{
+		result += std::pow(10, i) * (s[i] - '0');
+		i--;
+	}
+	return result;
+}
 
 
 void start_home(const bool PRINT_MATRIX, const size_t N)
@@ -89,13 +110,13 @@ void start_home(const bool PRINT_MATRIX, const size_t N)
 	}
 
 
-	if (PRINT_MATRIX) { cout << l; }
+	if (PRINT_MATRIX) { l.output(); }
 
 	auto end = std::chrono::high_resolution_clock::now();
 	cout << "Time to create matrix: ";
 	std::chrono::duration<double> duration = end - start;
 	cout << duration.count() << "\n\n";
-	if (PRINT_MATRIX) { cout << a; }
+	if (PRINT_MATRIX) { a.output(); }
 	start = std::chrono::high_resolution_clock::now();
 	Matrix b = Cholesky_decomposition(a);
 	end = std::chrono::high_resolution_clock::now();
@@ -106,7 +127,7 @@ void start_home(const bool PRINT_MATRIX, const size_t N)
 	Matrix c = Cholesky_decomposition_block_with_matrixblock_mult(a);
 	end = std::chrono::high_resolution_clock::now();
 	duration = end - start;
-	if (PRINT_MATRIX) { cout << b; cout << c; }
+	if (PRINT_MATRIX) { b.output(); c.output(); }
 
 
 	cout << "Block Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
@@ -117,6 +138,7 @@ void start_home(const bool PRINT_MATRIX, const size_t N)
 	duration = end - start;
 	cout << "Mkl time: " << duration.count() << "\n\n";
 	auto err = error_rate(l, b);
+	if (PRINT_MATRIX) { a.output(); }
 
 	cout << "Absolute error in Cholesky decomposition algorithm: " << err.first << '\n';
 	cout << "Relative error in Cholesky decomposition algorithm: " << err.second << "%\n\n";
@@ -126,7 +148,7 @@ void start_home(const bool PRINT_MATRIX, const size_t N)
 	cout << "Absolute error in block Cholesky decomposition algorithm: " << err2.first << '\n';
 	cout << "Relative error in block Cholesky decomposition algorithm: " << err2.second << "%\n\n";
 
-	auto err3 = error_rate(l, c);
+	auto err3 = error_rate(l, a);
 
 	cout << "Absolute error in mkl: " << err3.first << '\n';
 	cout << "Relative error in mkl: " << err3.second << "%\n";

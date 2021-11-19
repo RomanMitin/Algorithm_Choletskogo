@@ -10,7 +10,7 @@ Matrix sqr(const Matrix& mat);
 
 Matrix create_positive_definite_matrix(size_t size);
 
-Matrix Cholesky_decomposition(const Matrix& mat);
+Matrix Cholesky_decomposition(const Matrix& mat) noexcept;
 
 //Matrix Cholesky_decomposition_block(const Matrix& mat);
 

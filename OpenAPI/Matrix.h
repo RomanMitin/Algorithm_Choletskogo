@@ -1,14 +1,16 @@
 #pragma once
 #include<iostream>
+#include<cstring>
 
 typedef double type;
 
 class Matrix
 {
+public:
 	size_t _sizer;
 	size_t _sizec;
 	type* p;
-public:
+
 	//Matrix() {};
 	Matrix(size_t _sizer, size_t _sizec, type val = 0);
 
@@ -39,6 +41,8 @@ public:
 	friend std::ostream& operator<<(std::ostream& str,const Matrix& mat);
 
 	friend std::istream& operator>>(std::istream& str, Matrix& mat);
+
+	void output();
 
 	friend void mklcholetsky_algorithm(Matrix& mat);
 
