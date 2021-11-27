@@ -2,7 +2,7 @@
 #include<algorithm>
 #include"Matrix.h"
 
-void mklcholetsky_algorithm(Matrix& mat);
+Matrix mklcholetsky_algorithm(Matrix& mat);
 
 Matrix create_Lower_triangle_matrix(int64_t size);
 

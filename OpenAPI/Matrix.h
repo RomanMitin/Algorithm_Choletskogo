@@ -44,7 +44,7 @@ public:
 
 	void output();
 
-	friend void mklcholetsky_algorithm(Matrix& mat);
+	friend Matrix mklcholetsky_algorithm(Matrix& mat);
 
 	void fillup_rand();
 

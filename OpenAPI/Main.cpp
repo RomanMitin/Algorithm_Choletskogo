@@ -14,22 +14,13 @@
 
 using namespace std;
 
-const size_t N = 5000;
+const size_t N = 10000;
 
 constexpr bool PRINT_MATRIX = 0;
-constexpr bool HOME = 0;
+constexpr bool HOME = 1;
 
 int main(int argc,char* argv[]) 
 {
-	//argc = 4;
-	//argv = new char* [4];
-	//argv[1] = new char[5];
-	//argv[1] = const_cast<char*>("5000");
-	//argv[2] = new char[2];
-	//argv[2] = const_cast<char*>("0");
-	//argv[3] = new char[2];
-	//argv[3] = const_cast<char*>("2");
-
 	// argv[1] = размер матриц 
 	// argv[2] = число потоков, если 0 == число потоков по умолчанию
 	// argv[3] = режим запуска, какая функция вызывается
@@ -80,16 +71,16 @@ int main(int argc,char* argv[])
 			start_alg(mat, alg, time, bl1, bl2, bl3);
 		}
 
-		string s = "alg_" + to_string(alg) + "__number_of_threads_" + to_string(num_threads) + ".txt";
+		string s = "alg_" + to_string(alg) + ".txt";
 		ofstream out;
 		out.open(s, ios::app);
 		out.precision(4);
-		out << "Matrix_size:" << N << " " << time << '\n';
+		out << N << " " << num_threads << " " << time << '\n';
 		out.close();
 	}
 	else
 	{
-		start_home(PRINT_MATRIX,N);
+		start_home(PRINT_MATRIX, N);
 	}
 	
 	return 0;

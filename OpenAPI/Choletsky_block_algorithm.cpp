@@ -139,7 +139,7 @@ Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int
 		result[shift][shift] = sqrt(result[shift][shift]);
 
 		//#pragma omp parallel for
-		//#pragma omp simd
+		#pragma omp simd
 		for (int64_t i = 1; i < block_size; i++)
 		{
 			result[i + shift][shift] = result[i + shift][shift] / result[shift][shift];
@@ -156,7 +156,7 @@ Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int
 
 			result[i + shift][i + shift] = sqrt(result[i + shift][i + shift] - sum1);
 
-			//#pragma omp parallel for
+			#pragma omp parallel for
 			for (int64_t j = i + 1; j < block_size; j++)
 			{
 				type sum = 0;
@@ -177,15 +177,13 @@ Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int
 			for (int64_t j = 0; j < result.sizer() - block_size - shift; j++)
 			{
 				type tmp = result[j + block_size + shift][i + shift];
-				result[j + block_size + shift][i + shift] = 0;
+				type sum = 0;
+				#pragma omp simd reduction( + : sum)
 				for (size_t k = 0; k < i; k++)
 				{
-					result[j + block_size + shift][i + shift] += \
-						result[i + shift][k + shift] * result[j + block_size + shift][k + shift];
+					sum += result[i + shift][k + shift] * result[j + block_size + shift][k + shift];
 				}
-
-				result[j + block_size + shift][i + shift] = \
-					tmp - result[j + block_size + shift][i + shift];
+				result[j + block_size + shift][i + shift] = tmp - sum;
 
 				result[j + block_size + shift][i + shift] /= result[i + shift][i + shift];
 			}

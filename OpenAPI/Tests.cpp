@@ -118,7 +118,7 @@ void start_home(const bool PRINT_MATRIX, const size_t N)
 	cout << duration.count() << "\n\n";
 	if (PRINT_MATRIX) { a.output(); }
 	start = std::chrono::high_resolution_clock::now();
-	Matrix b = Cholesky_decomposition(a);
+	Matrix b = l;//Cholesky_decomposition(a);
 	end = std::chrono::high_resolution_clock::now();
 	duration = end - start;
 	cout << "Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
@@ -133,12 +133,12 @@ void start_home(const bool PRINT_MATRIX, const size_t N)
 	cout << "Block Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
 
 	start = std::chrono::high_resolution_clock::now();
-	mklcholetsky_algorithm(a);
+	Matrix d = mklcholetsky_algorithm(a);
 	end = std::chrono::high_resolution_clock::now();
 	duration = end - start;
 	cout << "Mkl time: " << duration.count() << "\n\n";
 	auto err = error_rate(l, b);
-	if (PRINT_MATRIX) { a.output(); }
+	if (PRINT_MATRIX) { d.output(); }
 
 	cout << "Absolute error in Cholesky decomposition algorithm: " << err.first << '\n';
 	cout << "Relative error in Cholesky decomposition algorithm: " << err.second << "%\n\n";
@@ -148,9 +148,8 @@ void start_home(const bool PRINT_MATRIX, const size_t N)
 	cout << "Absolute error in block Cholesky decomposition algorithm: " << err2.first << '\n';
 	cout << "Relative error in block Cholesky decomposition algorithm: " << err2.second << "%\n\n";
 
-	auto err3 = error_rate(l, a);
+	auto err3 = error_rate(l, d);
 
 	cout << "Absolute error in mkl: " << err3.first << '\n';
 	cout << "Relative error in mkl: " << err3.second << "%\n";
 }
-

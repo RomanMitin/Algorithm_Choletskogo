@@ -137,7 +137,7 @@
       <OpenMPSupport>true</OpenMPSupport>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <OpenMP>GenerateParallelCode</OpenMP>
-      <OptimizationDiagnosticLevel>Disable</OptimizationDiagnosticLevel>
+      <OptimizationDiagnosticLevel>Level5</OptimizationDiagnosticLevel>
       <Optimization>MaxSpeedHighLevel</Optimization>
       <UseProcessorExtensions>HOST</UseProcessorExtensions>
     </ClCompile>

@@ -1,5 +1,6 @@
 #include<iostream>
 #include<cmath>
+#include<omp.h>
 #include "Matrix.h"
 #ifndef RAND_MAX
 #define RAND_MAX 0x7fff
@@ -11,13 +12,27 @@ Matrix::Matrix(size_t _sizer, size_t _sizec, type val)
 	:_sizer(_sizer), _sizec(_sizec)
 {
 	p = new type[_sizer * _sizec];
-	memset(p, val, _sizec * _sizer * sizeof(type));
+
+
+	memset(p, val, _sizer * _sizec * sizeof(type));
+	/*int size = (_sizec * _sizer * sizeof(type));
+	int n;
+	#pragma omp parallel
+	{
+		n = omp_get_num_threads();
+		int tmpsize = size / n;
+		memset(p + tmpsize * omp_get_thread_num(), val, tmpsize);
+	}
+	this->output();
+	memset(p + size * n, val, size % n);
+	this->output();*/
 }
 
 Matrix::Matrix(const Matrix& second)
 	:_sizer(second._sizer),_sizec(second._sizec)
 {
 	p = new type[_sizec * _sizer];
+	#pragma omp parallel for
 	for (size_t i = 0; i < _sizec * _sizer; i++)
 	{
 		p[i] = second.p[i];
@@ -225,9 +240,9 @@ std::istream& operator>>(std::istream& str, Matrix& mat)
 
 void Matrix::output()
 {
-	for (size_t i = 0; i < _sizer; i++)
+	for (size_t i = 0; i < this->_sizer; i++)
 	{
-		for (size_t j = 0; j < _sizec; j++)
+		for (size_t j = 0; j < this->_sizec; j++)
 		{
 			std::cout << (*this)[i][j] << '\t';
 		}
@@ -244,12 +259,12 @@ void Matrix::fillup_rand()
 	}
 }
 
-size_t Matrix::sizer() const
+__forceinline size_t Matrix::sizer() const
 {
-	return _sizer;
+ 	return _sizer;
 }
 
-size_t Matrix::sizec() const
+__forceinline size_t Matrix::sizec() const
 {
 	return _sizec;
 }
