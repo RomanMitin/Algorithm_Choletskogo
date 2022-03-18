@@ -2,7 +2,7 @@
 #include<iostream>
 #include<cstring>
 
-typedef double type;
+typedef float type;
 
 class Matrix
 {
@@ -44,7 +44,7 @@ public:
 
 	void output();
 
-	friend Matrix mklcholetsky_algorithm(Matrix& mat);
+	//friend Matrix mklcholetsky_algorithm(Matrix& mat);
 
 	void fillup_rand();
 

@@ -1,23 +1,23 @@
 #include<omp.h>
 #include<cmath>
 #include<algorithm>
-#include<mkl.h>
+//#include<mkl.h>
 #include"Matrix_func.h"
 
-Matrix mklcholetsky_algorithm(Matrix& mat)
-{
-	//int info;
-	//dpotrf("L", reinterpret_cast<int*>(&mat._sizer), mat.p, reinterpret_cast<int*>(&mat._sizec), &info);
-	Matrix result(mat);
-	LAPACKE_dpotrf(LAPACK_ROW_MAJOR, 'L', mat.sizec(), result.p, mat.sizer());
-	#pragma omp parallel for
-	for (int i = 0; i < mat.sizec() - 1; i++)
-	{
-		memset(result[i] + i + 1, 0, sizeof(type) * (result.sizer() - i - 1));
-	}
-
-	return result;
-}
+//Matrix mklcholetsky_algorithm(Matrix& mat)
+//{
+//	//int info;
+//	//dpotrf("L", reinterpret_cast<int*>(&mat._sizer), mat.p, reinterpret_cast<int*>(&mat._sizec), &info);
+//	Matrix result(mat);
+//	LAPACKE_dpotrf(LAPACK_ROW_MAJOR, 'L', mat.sizec(), result.p, mat.sizer());
+//	#pragma omp parallel for
+//	for (int i = 0; i < mat.sizec() - 1; i++)
+//	{
+//		memset(result[i] + i + 1, 0, sizeof(type) * (result.sizer() - i - 1));
+//	}
+//
+//	return result;
+//}
 
 double randd()
 {

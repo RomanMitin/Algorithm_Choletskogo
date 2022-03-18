@@ -2,11 +2,15 @@
 #include<cmath>
 #include<omp.h>
 #include "Matrix.h"
+#include"Matrix_func.h"
 #ifndef RAND_MAX
 #define RAND_MAX 0x7fff
 #endif // !RAND_MAX
 
-double randd();
+//double randd()
+//{
+//	return (rand() % 100 - 50) / 10.0;
+//}
 
 Matrix::Matrix(size_t _sizer, size_t _sizec, type val)
 	:_sizer(_sizer), _sizec(_sizec)
@@ -32,7 +36,7 @@ Matrix::Matrix(const Matrix& second)
 	:_sizer(second._sizer),_sizec(second._sizec)
 {
 	p = new type[_sizec * _sizer];
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for (size_t i = 0; i < _sizec * _sizer; i++)
 	{
 		p[i] = second.p[i];
@@ -47,12 +51,12 @@ Matrix::Matrix(Matrix&& second) noexcept
 	second._sizer = 0;
 }
 
-__forceinline type* Matrix::operator[](size_t i) noexcept
+type* Matrix::operator[](size_t i) noexcept
 {
 	return p + i * _sizec;
 }
 
-__forceinline const type* Matrix::operator[](size_t i) const noexcept
+const type* Matrix::operator[](size_t i) const noexcept
 {
 	return p + i * _sizec;
 }
@@ -259,12 +263,12 @@ void Matrix::fillup_rand()
 	}
 }
 
-__forceinline size_t Matrix::sizer() const
+ size_t Matrix::sizer() const
 {
  	return _sizer;
 }
 
-__forceinline size_t Matrix::sizec() const
+ size_t Matrix::sizec() const
 {
 	return _sizec;
 }
