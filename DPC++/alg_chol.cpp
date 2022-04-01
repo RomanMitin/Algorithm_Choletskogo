@@ -54,7 +54,7 @@ Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
 								for (size_t i = 0; i < num_work_items; ++i)
 									accum_acc[i] = 0.0f;
 							});
-					});
+					}).wait();
 
 
 				q.submit([&](handler& cgh) {
@@ -73,15 +73,13 @@ Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
 						if (i == 1)
 							ostream << "glob_id: " << glob_id << " sum: " << sum << '\n';
 						});
-					});
-
-				
-				q.wait();
+					}).wait();
 
 				q.submit([&](handler& cgh)
 					{
-						auto accum_acc = accum_buf.get_access<access::mode::write>(cgh); //read_write?
-						auto sum = sum_buf.get_access<access::mode::write>(cgh);
+						auto accum_acc = accum_buf.get_access<access::mode::read_write>(cgh); //read_write?
+						auto sum = sum_buf.get_access<access::mode::read_write>(cgh);
+						auto mat = mat_buff.get_access<access::mode::read_write>(cgh);
 
 						stream ostream(1024, 80, cgh);
 
@@ -90,19 +88,9 @@ Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
 								for (size_t i = 1; i < accum_acc.get_size(); ++i)
 									accum_acc[0] += accum_acc[i];
 								sum[0] = accum_acc[0];
-								//ostream << sum[0] << '\n';
-							});
-					});
 
-
-				q.submit([&](handler& cgh)
-					{
-						auto mat = mat_buff.get_access<access::mode::read_write>(cgh);
-						auto sum = sum_buf.get_access<access::mode::read>(cgh);
-
-						cgh.single_task([=]()
-							{
 								mat[i][i] = sqrt(mat[i][i] - sum[0]);
+								//ostream << sum[0] << '\n';
 							});
 					}).wait();
 
