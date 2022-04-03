@@ -130,6 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMP>GenerateParallelCode</OpenMP>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,8 +140,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\OpenAPI\Choletsky_block_algorithm.cpp" />
     <ClCompile Include="..\OpenAPI\Matrix.cpp" />
     <ClCompile Include="..\OpenAPI\Matrix_func.cpp" />
+    <ClCompile Include="..\OpenAPI\Tests.cpp" />
     <ClCompile Include="alg_chol.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

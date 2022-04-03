@@ -1,6 +1,5 @@
 #include<cmath>
 #include<algorithm>
-#include<mkl.h>
 #include"Choletsky_block_algorithm.h"
 
 Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int64_t block_size, int block_sz_n, int block_sz_m) noexcept
@@ -68,9 +67,9 @@ Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int
 		int m1 = block_size;
 		int m2 = n1;
 		// Нахождение редуцированной матрицы A22 с помощью вычитания из исходной матрицы A22 блока L21 "В квадрате"
-		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, n1, m2, m1, 1.0, result[block_size + shift] + shift, result.sizec(), \
-			result[block_size + shift] + shift, result.sizec(), -1.0, result[block_size + shift] + shift + block_size, result.sizec());
-		/*
+		/*cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, n1, m2, m1, 1.0, result[block_size + shift] + shift, result.sizec(), \
+			result[block_size + shift] + shift, result.sizec(), -1.0, result[block_size + shift] + shift + block_size, result.sizec());*/
+		
 		#pragma omp parallel for
 		for (int ib = 0; ib < n1; ib += block_sz_n)
 			for (int kb = 0; kb < m1; kb += block_sz_m)
@@ -85,7 +84,7 @@ Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int
 								sum2 += result[i + block_size + shift][k + shift] * result[j + block_size + shift][k + shift];
 							}
 							result[i + block_size + shift][j + block_size + shift] -= sum2;
-						}*/
+						}
 	}
 
 	block_size = result.sizer() - shift;

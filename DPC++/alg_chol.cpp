@@ -4,6 +4,28 @@
 
 using namespace sycl;
 
+
+void print_on_device(queue& q, buffer<type, 2>& data_buf, size_t size)
+{
+	q.submit([&](handler& cgh)
+		{
+			auto data = data_buf.get_access<access::mode::read>(cgh);
+			stream ostream(1024, 80, cgh);
+			cgh.single_task([=]()
+				{
+					for (size_t i = 0; i < size; i++)
+					{
+						for (size_t j = 0; j < size; j++)
+						{
+							ostream << data[i][j] << '\t';
+						}
+						ostream << endl;
+					}
+					ostream << endl;
+				});
+		});
+}
+
 Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
 {
 	if (matrix.sizec() != matrix.sizer())
@@ -19,7 +41,10 @@ Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
 	{
 		queue q{ host_selector() };
 
+
 		buffer<type, 2> mat_buff(result.p, range<2>(block_size, block_size));
+
+		//print_on_device(q, mat_buff, block_size);
 
 		q.submit([&](handler& cgh)
 		{
@@ -34,28 +59,24 @@ Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
 
 		}).wait();
 
+		//print_on_device(q, mat_buff);
+
 		size_t num_work_items = q.get_device().get_info<sycl::info::device::max_compute_units>();
 		type* tmp_sum = new type[num_work_items];
 		type* sum1 = new type;
+
+		for (size_t i = 0; i < num_work_items; i++)
+			tmp_sum[i] = 0.0f;
+		*sum1 = 0.0f;
+
 		{
 			buffer<type, 1> accum_buf(tmp_sum, range<1>(num_work_items));
 			buffer<type, 1> sum_buf(sum1, range<1>(1));
 
 			for (int64_t i = 1; i < block_size; i++)
 			{
-				 // создать на устройстве
-	
-				q.submit([&](handler& cgh)
-					{
-						auto accum_acc = accum_buf.get_access<access::mode::write>(cgh);
-						
-						cgh.single_task([=]()
-							{
-								for (size_t i = 0; i < num_work_items; ++i)
-									accum_acc[i] = 0.0f;
-							});
-					}).wait();
-
+				/*if (i == 2)
+					print_on_device(q, mat_buff, block_size);*/
 
 				q.submit([&](handler& cgh) {
 					auto mat_acc = mat_buff.get_access<access::mode::read>(cgh);
@@ -67,17 +88,21 @@ Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
 						size_t glob_id = index.get(0);
 						type sum = 0.0f;
 						for (size_t j = glob_id; j < i; j += num_work_items)
+						{
 							sum += mat_acc[i][j] * mat_acc[i][j];
+							/*if (i == 4)
+								ostream << "glob_id: " << glob_id << " mat[" << i << "][" << j << "] " << mat_acc[i][j] << '\n';*/
+						}
 						accum_acc[glob_id] = sum;
 
-						if (i == 1)
-							ostream << "glob_id: " << glob_id << " sum: " << sum << '\n';
+						/*if (i == 4)
+							ostream << "glob_id: " << glob_id << " sum: " << sum << '\n';*/
 						});
 					}).wait();
 
 				q.submit([&](handler& cgh)
 					{
-						auto accum_acc = accum_buf.get_access<access::mode::read_write>(cgh); //read_write?
+						auto accum_acc = accum_buf.get_access<access::mode::read_write>(cgh);
 						auto sum = sum_buf.get_access<access::mode::read_write>(cgh);
 						auto mat = mat_buff.get_access<access::mode::read_write>(cgh);
 
@@ -85,12 +110,16 @@ Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
 
 						cgh.single_task([=]()
 							{
-								for (size_t i = 1; i < accum_acc.get_size(); ++i)
-									accum_acc[0] += accum_acc[i];
-								sum[0] = accum_acc[0];
+								for (size_t j = 0; j < i && j < num_work_items; ++j) // поправил цикл
+								{
+									sum[0] += accum_acc[j];
+									accum_acc[j] = 0.0f;
+								}
 
 								mat[i][i] = sqrt(mat[i][i] - sum[0]);
 								//ostream << sum[0] << '\n';
+								sum[0] = 0.0f;
+								
 							});
 					}).wait();
 
@@ -102,6 +131,7 @@ Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
 
 							cgh.parallel_for(range<1>(block_size - i - 1), [=](id<1> j)
 								{
+									j += i + 1;
 									type sum = 0.0f;
 									for (int64_t p = 0; p < i; p++)
 									{

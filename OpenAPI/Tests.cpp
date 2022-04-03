@@ -5,7 +5,7 @@
 #include<vector>
 #include<string>
 #include<chrono>
-#include<mkl.h>
+#include <windows.h>
 #include"Matrix.h"
 #include"Matrix_func.h"
 #include"Choletsky_block_algorithm.h"
@@ -13,13 +13,19 @@
 
 using namespace std;
 
+//std::string getexepath()
+//{
+//	char result[MAX_PATH];
+//	return std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
+//}
+
 void Get_matrix_form_file(Matrix& a, Matrix& l)
 {
 	size_t N = a.sizec();
 
 	string file_name = "Pos_def_Matrix_size_" + to_string(N);
 	ifstream file;
-	file.open("../Create_positive_def_Matix/" + file_name, ios::binary);
+	file.open("C:\\Users\\User\\source\\repos\\OpenAPI\\Create_positive_def_Matix\\" + file_name, ios::binary);
 	if (file.is_open())
 	{
 		file >> l;
@@ -45,13 +51,13 @@ Matrix start_alg(Matrix& mat, int alg, double& time, int64_t block1, int block2,
 	switch (alg)
 	{
 	case 1:
-		result = Cholesky_decomposition(mat);
+		//result = Cholesky_decomposition(mat);
 		break;
 	case 2:
 		result = Cholesky_decomposition_block_with_matrixblock_mult(mat, block1, block2, block3);
 		break;
 	case 3:
-		mklcholetsky_algorithm(mat);
+		//mklcholetsky_algorithm(mat);
 		break;
 	default:
 		cerr << "Wrong algo in argv[2][0]\n";
@@ -133,12 +139,12 @@ void start_home(const bool PRINT_MATRIX, const size_t N)
 	cout << "Block Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
 
 	start = std::chrono::high_resolution_clock::now();
-	Matrix d = mklcholetsky_algorithm(a);
+	//Matrix d = mklcholetsky_algorithm(a);
 	end = std::chrono::high_resolution_clock::now();
 	duration = end - start;
 	cout << "Mkl time: " << duration.count() << "\n\n";
 	auto err = error_rate(l, b);
-	if (PRINT_MATRIX) { d.output(); }
+	//if (PRINT_MATRIX) { d.output(); }
 
 	cout << "Absolute error in Cholesky decomposition algorithm: " << err.first << '\n';
 	cout << "Relative error in Cholesky decomposition algorithm: " << err.second << "%\n\n";
@@ -148,8 +154,8 @@ void start_home(const bool PRINT_MATRIX, const size_t N)
 	cout << "Absolute error in block Cholesky decomposition algorithm: " << err2.first << '\n';
 	cout << "Relative error in block Cholesky decomposition algorithm: " << err2.second << "%\n\n";
 
-	auto err3 = error_rate(l, d);
+	/*auto err3 = error_rate(l, d);
 
 	cout << "Absolute error in mkl: " << err3.first << '\n';
-	cout << "Relative error in mkl: " << err3.second << "%\n";
+	cout << "Relative error in mkl: " << err3.second << "%\n";*/
 }

@@ -4,13 +4,16 @@
 #include<vector>
 #include<string>
 #include<chrono>
+#include<omp.h>
 #include"alg_chol.h"
 #include"matrix_func.h"
+#include"..\\OpenAPI\Choletsky_block_algorithm.h"
+#include"..\\OpenAPI\Tests.h"
 
 using namespace std;
 
-const bool PRINT_MATRIX = true;
-const int N = 10;
+const bool PRINT_MATRIX = false;
+const int N = 3000;
 
 int main()
 {
@@ -25,10 +28,19 @@ int main()
 
 	Matrix a(N, N), l(N, N);
 
-	l = create_Lower_triangle_matrix(N);
-	a = sqr(l);
+	try
+	{
+		throw 1;
+		Get_matrix_form_file(a, l);
+	}
+	catch (...)
+	{
+		l = create_Lower_triangle_matrix(N);
+		a = sqr(l);
+	}
+	
 
-	if (PRINT_MATRIX) { l.output(); }
+	if (PRINT_MATRIX) { l.output(); a.output(); }
 
 	auto end = std::chrono::high_resolution_clock::now();
 	cout << "Time to create matrix: ";
@@ -44,6 +56,12 @@ int main()
 	if (PRINT_MATRIX) { b.output(); }
 	cout << "Cholesky decomposition algorithm time: " << duration.count() << "\n\n";
 	
+	start = std::chrono::high_resolution_clock::now();
+	Matrix d = Cholesky_decomposition_block_with_matrixblock_mult(a);
+	end = std::chrono::high_resolution_clock::now();
+	duration = end - start;
+	cout << "Cholesky decomposition block_algorithm time: " << duration.count() << "\n\n";
+
 	start = std::chrono::high_resolution_clock::now();
 	Matrix c = Cholesky_decomposition_dpc(a);
 	end = std::chrono::high_resolution_clock::now();
