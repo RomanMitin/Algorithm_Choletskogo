@@ -47,6 +47,7 @@ Matrix create_Lower_triangle_matrix(int64_t size)
 		}
 	}
 
+	result[0][0] = abs(result[0][0]);
 	return result;
 }
 
@@ -202,20 +203,15 @@ std::pair<type,double> error_rate(const Matrix& lower_triangle_exp,const Matrix&
 	{
 		for (int64_t j = 0; j < lower_triangle_calcul.sizer(); j++)
 		{
-			type error1 = abs(lower_triangle_calcul[i][j] - lower_triangle_exp[i][j]);
-			type error2 = abs(lower_triangle_calcul[i][j] + lower_triangle_exp[i][j]);
-			if (std::min(error1, error2) > errormax)
+			type error = abs(lower_triangle_calcul[i][j] - lower_triangle_exp[i][j]);
+			if (error > errormax)
 			{
-				/*im = i;
-				jm = j;*/
-				errormax = std::min(error1, error2);
+				errormax = error;
 				relative_error = abs(lower_triangle_calcul[i][j] - lower_triangle_exp[i][j]) / lower_triangle_exp[i][j] * 100;
 			}
 		}
 	}
-	/*std::cout << im << ' ' << jm<<'\n';
-	std::cout << lower_triangle_calcul[im][jm] << '\n';
-	std::cout << lower_triangle_exp[im][jm] << '\n';*/
+
 	std::pair<type, double> result(errormax, abs(relative_error));
 	return result;
 }
