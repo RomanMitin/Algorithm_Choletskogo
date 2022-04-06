@@ -12,12 +12,12 @@
 
 using namespace std;
 
-const bool PRINT_MATRIX = false;
-const int N = 3000;
+constexpr bool PRINT_MATRIX = false;
+constexpr int N = 2000;
 
 int main()
 {
-	srand(10);
+	srand(0);
 	if (PRINT_MATRIX)
 	{
 		cout << fixed;

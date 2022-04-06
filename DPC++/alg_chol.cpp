@@ -26,7 +26,7 @@ void print_on_device(queue& q, buffer<type, 2>& data_buf, size_t size)
 		});
 }
 
-Matrix Cholesky_decomposition_dpc(const Matrix& matrix, size_t shift)
+Matrix Cholesky_decomposition_dpc(const Matrix& matrix)
 {
 	if (matrix.sizec() != matrix.sizer())
 		exit(1);

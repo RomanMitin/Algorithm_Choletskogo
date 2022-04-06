@@ -145,6 +145,7 @@
     <ClCompile Include="..\OpenAPI\Matrix_func.cpp" />
     <ClCompile Include="..\OpenAPI\Tests.cpp" />
     <ClCompile Include="alg_chol.cpp" />
+    <ClCompile Include="alg_chol_dpc_block.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

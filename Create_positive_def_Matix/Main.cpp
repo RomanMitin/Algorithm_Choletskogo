@@ -10,7 +10,7 @@ int main()
 {
 	srand(0);
 	#pragma omp parallel for schedule(dynamic)
-	for (int i = 12000; i >= 5000; i -= 1000)
+	for (int i =15; i >= 0; i -= 1000)
 	{
 		_sleep(omp_get_thread_num() * 50);
 		cout << omp_get_thread_num() << " is computing matrix with size " << i << '\n';

@@ -230,7 +230,6 @@ std::ostream& operator<<(std::ostream& str,const Matrix& mat)
 
 std::istream& operator>>(std::istream& str, Matrix& mat)
 {
-
 	str.read(reinterpret_cast<char*>(mat.p), sizeof(type) * mat.sizec() * mat.sizer());
 	/*for (size_t i = 0; i < mat.sizer(); i++)
 	{
