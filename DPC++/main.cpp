@@ -12,8 +12,8 @@
 
 using namespace std;
 
-constexpr bool PRINT_MATRIX = false;
-constexpr int N = 2000;
+constexpr bool PRINT_MATRIX = true;
+constexpr int N = 10;
 
 int main()
 {
@@ -30,7 +30,6 @@ int main()
 
 	try
 	{
-		throw 1;
 		Get_matrix_form_file(a, l);
 	}
 	catch (...)
@@ -66,10 +65,17 @@ int main()
 	Matrix c = Cholesky_decomposition_dpc(a);
 	end = std::chrono::high_resolution_clock::now();
 	duration = end - start;
-
-	if (PRINT_MATRIX) { c.output(); }
 	cout << "Cholesky decomposition_dpc++ algorithm time: " << duration.count() << "\n\n";
 
+	//if (PRINT_MATRIX) { c.output(); }
+	
+	start = std::chrono::high_resolution_clock::now();
+	Matrix g = Cholesky_decomposition_dpc_block(a);
+	end = std::chrono::high_resolution_clock::now();
+	duration = end - start;
+	cout << "Cholesky decomposition_dpc++_block algorithm time: " << duration.count() << "\n\n";
+
+	if (PRINT_MATRIX) { g.output(); }
 
 	auto err = error_rate(l, b);
 
@@ -80,4 +86,9 @@ int main()
 
 	cout << "Absolute error in block Cholesky decomposition_dpc++ algorithm: " << err2.first << '\n';
 	cout << "Relative error in block Cholesky decomposition_dpc++ algorithm: " << err2.second << "%\n\n";
+
+	auto err3 = error_rate(l, g);
+
+	cout << "Absolute error in block Cholesky decomposition_dpc++_block algorithm: " << err3.first << '\n';
+	cout << "Relative error in block Cholesky decomposition_dpc++_block algorithm: " << err3.second << "%\n\n";
 }

@@ -25,7 +25,7 @@ void Get_matrix_form_file(Matrix& a, Matrix& l)
 
 	string file_name = "Pos_def_Matrix_size_" + to_string(N);
 	ifstream file;
-	file.open("C:\\Users\\User\\source\\repos\\OpenAPI\\Create_positive_def_Matix\\" + file_name, ios::binary);
+	file.open("C:\\Users\\User\\source\\repos\\OpenAPI\\Create_positive_def_Matix\\" + file_name, ios::binary | ios::in);
 	if (file.is_open())
 	{
 		file >> l;
