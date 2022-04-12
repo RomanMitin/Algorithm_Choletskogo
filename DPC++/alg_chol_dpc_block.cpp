@@ -10,18 +10,17 @@ void findL21(queue& q, buffer<type, 2>& mat_buff, size_t shift, size_t block_siz
 		q.submit([&](handler& cgh)
 			{
 				auto mat_acc = mat_buff.get_access<access::mode::read_write>(cgh); // Будет параллелиться?
-
+				stream ostr(1024, 80, cgh);
 				cgh.parallel_for(range<1>(size - block_size - shift), [=](id<1> item)
 					{
 						size_t j = item.get(0);
-						type tmp = mat_acc[j + block_size + shift][i + shift];
-						type sum = 0;
+						type sum = 0.0f;
 
 						for (size_t k = 0; k < i; k++)
 						{
 							sum += mat_acc[i + shift][k + shift] * mat_acc[j + block_size + shift][k + shift];
 						}
-						mat_acc[j + block_size + shift][i + shift] = tmp - sum;
+						mat_acc[j + block_size + shift][i + shift] -= sum;
 
 						mat_acc[j + block_size + shift][i + shift] /= mat_acc[i + shift][i + shift];
 					});
@@ -30,28 +29,31 @@ void findL21(queue& q, buffer<type, 2>& mat_buff, size_t shift, size_t block_siz
 	q.wait();
 }
 
-void findA22(queue& q, buffer<type, 2>& mat_buff, size_t shift, size_t block_size, size_t mat_block)
+void findA22(queue& q, buffer<type, 2>& mat_buff, size_t shift, size_t block_size, size_t size)
 {
-	size_t row = mat_buff.get_size() - shift - block_size;
+	size_t row = size - shift - block_size;
 	size_t col = block_size;
 
 	q.submit([&](handler& cgh)
 		{
-			auto mat_acc = mat_buff.get_access<access::mode::write>(cgh);
-
-			cgh.parallel_for(nd_range<2>(range<2>(row, col), range<2>(mat_block, mat_block)), [=](nd_item<2> item)
+			auto mat_acc = mat_buff.get_access<access::mode::read_write>(cgh);
+			//stream ostr(1024, 80, cgh);
+			cgh.parallel_for(range<2>(row, col), [=](item<2> item)
 				{
 					type sum = 0.0f;
-					size_t i = item.get_global_id(0);
-					size_t j = item.get_global_id(1);
+					size_t i = item.get_id(0);
+					size_t j = item.get_id(1);
 					for (size_t k = 0; k < col; k++)
 					{
 						sum += mat_acc[i + block_size + shift][k + shift] * mat_acc[j + block_size + shift][k + shift];
+						
 					}
+					
+				/*	if (i == 0 && j == 0 && shift == 3)
+						ostr << mat_acc[i + block_size + shift][j + block_size + shift] << endl;*/
 					mat_acc[i + block_size + shift][j + block_size + shift] -= sum;
 				});
-
-		});
+		}).wait();
 }
 
 Matrix Cholesky_decomposition_dpc_block(const Matrix& mat, size_t block_size)
@@ -66,19 +68,25 @@ Matrix Cholesky_decomposition_dpc_block(const Matrix& mat, size_t block_size)
 	type* sum1 = new type;
 
 	size_t mat_size = result.sizec();
+
+	result.output();
 	
 	{
 		buffer<type, 2> mat_buff(result.p, range<2>(mat_size, mat_size));
+		print_on_device(q, mat_buff, 10);
 		for (shift = 0; shift < int64_t(result.sizer() - block_size); shift += block_size)
 		{
 			// Обычный алгоритм Холетского для блока L11
 			Cholesky_decomposition_dpc(q, mat_buff, shift, block_size, tmp_sum, sum1);
 
 			// Решение нижнетреугольной системы для нахождения блока L21
-			findL21(q, mat_buff, shift, block_size, mat.sizec());
-
+			findL21(q, mat_buff, shift, block_size, result.sizec());
+			
 			// Нахождение редуцированной матрицы A22 с помощью вычитания из исходной матрицы A22 блока L21 "В квадрате"
-			findA22(q, mat_buff, shift, block_size, 1);
+			findA22(q, mat_buff, shift, block_size, result.sizec());
+
+			//if (shift + block_size >= int64_t(result.sizer() - block_size))
+			//print_on_device(q, mat_buff, 10);
 		}
 
 		
@@ -105,10 +113,10 @@ Matrix Cholesky_decomposition_dpc_block(const Matrix& mat, size_t block_size)
 			});
 
 	}
-	
 
 	return result;
 }
+
 //void _block_mm(sycl::queue queue, std::vector<float>& a, std::vector<float>& b, \
 //	std::vector<float>& c, uint32_t size, uint32_t block) {
 //

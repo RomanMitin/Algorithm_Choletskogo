@@ -5,7 +5,7 @@
 using namespace sycl;
 
 
-void print_on_device(queue& q, buffer<type, 2>& data_buf, size_t size)
+void print_on_device(queue q, buffer<type, 2> data_buf, size_t size)
 {
 	q.submit([&](handler& cgh)
 		{

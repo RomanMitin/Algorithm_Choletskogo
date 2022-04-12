@@ -91,4 +91,6 @@ int main()
 
 	cout << "Absolute error in block Cholesky decomposition_dpc++_block algorithm: " << err3.first << '\n';
 	cout << "Relative error in block Cholesky decomposition_dpc++_block algorithm: " << err3.second << "%\n\n";
+
+	return 0;
 }
