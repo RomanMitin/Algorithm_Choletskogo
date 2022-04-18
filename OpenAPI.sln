@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Create_positive_def_Matix",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DPC++", "DPC++\DPC++.vcxproj", "{7A68FA61-AB14-475F-8A55-D96F57DD6856}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Example", "example\example.vcxproj", "{50C29E7E-7C4C-49B5-A6E2-657E2CA0E080}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{7A68FA61-AB14-475F-8A55-D96F57DD6856}.Release|x64.Build.0 = Release|x64
 		{7A68FA61-AB14-475F-8A55-D96F57DD6856}.Release|x86.ActiveCfg = Release|Win32
 		{7A68FA61-AB14-475F-8A55-D96F57DD6856}.Release|x86.Build.0 = Release|Win32
+		{50C29E7E-7C4C-49B5-A6E2-657E2CA0E080}.Debug|x64.ActiveCfg = Debug|x64
+		{50C29E7E-7C4C-49B5-A6E2-657E2CA0E080}.Debug|x64.Build.0 = Debug|x64
+		{50C29E7E-7C4C-49B5-A6E2-657E2CA0E080}.Debug|x86.ActiveCfg = Debug|Win32
+		{50C29E7E-7C4C-49B5-A6E2-657E2CA0E080}.Debug|x86.Build.0 = Debug|Win32
+		{50C29E7E-7C4C-49B5-A6E2-657E2CA0E080}.Release|x64.ActiveCfg = Release|x64
+		{50C29E7E-7C4C-49B5-A6E2-657E2CA0E080}.Release|x64.Build.0 = Release|x64
+		{50C29E7E-7C4C-49B5-A6E2-657E2CA0E080}.Release|x86.ActiveCfg = Release|Win32
+		{50C29E7E-7C4C-49B5-A6E2-657E2CA0E080}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

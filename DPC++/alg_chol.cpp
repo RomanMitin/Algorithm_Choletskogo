@@ -5,7 +5,7 @@
 using namespace sycl;
 
 
-void print_on_device(queue q, buffer<type, 2> data_buf, size_t size)
+void print_on_device(queue& q, buffer<type, 2>& data_buf, size_t size)
 {
 	q.submit([&](handler& cgh)
 		{
@@ -13,11 +13,36 @@ void print_on_device(queue q, buffer<type, 2> data_buf, size_t size)
 			stream ostream(1024, 80, cgh);
 			cgh.single_task([=]()
 				{
+					ostream << scientific;
+					ostream << setprecision(10);
 					for (size_t i = 0; i < size; i++)
 					{
 						for (size_t j = 0; j < size; j++)
 						{
 							ostream << data[i][j] << '\t';
+						}
+						ostream << endl;
+					}
+					ostream << endl;
+				});
+		});
+}
+
+void print_on_device2(queue& q, buffer<type, 1>& data_buf, size_t size)
+{
+	q.submit([&](handler& cgh)
+		{
+			auto data = data_buf.get_access<access::mode::read>(cgh);
+			stream ostream(1024, 80, cgh);
+			cgh.single_task([=]()
+				{
+					ostream << scientific;
+					ostream << setprecision(10);
+					for (size_t i = 0; i < size; i++)
+					{
+						for (size_t j = 0; j < size; j++)
+						{
+							ostream << data[i * size + j] << '\t';
 						}
 						ostream << endl;
 					}

@@ -60,7 +60,7 @@ Matrix Cholesky_decomposition_dpc_block(const Matrix& mat, size_t block_size)
 {
 	Matrix result(mat);
 
-	queue q{ host_selector() };
+	queue q{ cpu_selector() };
 
 	int64_t shift;
 	size_t num_work_items = q.get_device().get_info<sycl::info::device::max_compute_units>();
@@ -73,7 +73,8 @@ Matrix Cholesky_decomposition_dpc_block(const Matrix& mat, size_t block_size)
 	
 	{
 		buffer<type, 2> mat_buff(result.p, range<2>(mat_size, mat_size));
-		print_on_device(q, mat_buff, 10);
+		buffer<type, 1> mat_buff2(result.p, range<1>(mat_size* mat_size));
+		print_on_device2(q, mat_buff2, 10);
 		for (shift = 0; shift < int64_t(result.sizer() - block_size); shift += block_size)
 		{
 			// Обычный алгоритм Холетского для блока L11

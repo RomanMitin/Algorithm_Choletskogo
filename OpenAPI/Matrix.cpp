@@ -7,10 +7,10 @@
 #define RAND_MAX 0x7fff
 #endif // !RAND_MAX
 
-//double randd()
-//{
-//	return (rand() % 100 - 50) / 10.0;
-//}
+inline double randd()
+{
+	return (rand() % 100 - 50) / 10.0;
+}
 
 Matrix::Matrix(size_t _sizer, size_t _sizec, type val)
 	:_sizer(_sizer), _sizec(_sizec)
@@ -243,15 +243,17 @@ std::istream& operator>>(std::istream& str, Matrix& mat)
 
 void Matrix::output()
 {
+	std::cout << std::scientific;
+	std::cout << std::setprecision(10);
 	for (size_t i = 0; i < this->_sizer; i++)
 	{
 		for (size_t j = 0; j < this->_sizec; j++)
 		{
 			std::cout << (*this)[i][j] << '\t';
 		}
-		std::cout << '\n';
+		std::cout << std::endl;
 	}
-	std::cout << '\n';
+	std::cout << std::endl;
 }
 
 void Matrix::fillup_rand()

@@ -1,6 +1,7 @@
 #pragma once
 #include<iostream>
 #include<cstring>
+#include<iomanip>
 
 typedef float type;
 
