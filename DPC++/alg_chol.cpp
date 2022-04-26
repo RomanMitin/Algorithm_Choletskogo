@@ -10,16 +10,17 @@ void print_on_device(queue& q, buffer<type, 2>& data_buf, size_t size)
 	q.submit([&](handler& cgh)
 		{
 			auto data = data_buf.get_access<access::mode::read>(cgh);
-			stream ostream(1024, 80, cgh);
+			stream ostream(1024, 768, cgh);
 			cgh.single_task([=]()
 				{
-					ostream << scientific;
-					ostream << setprecision(10);
+					ostream << hex;
+					/*ostream << scientific;
+					ostream << setprecision(16);*/
 					for (size_t i = 0; i < size; i++)
 					{
 						for (size_t j = 0; j < size; j++)
 						{
-							ostream << data[i][j] << '\t';
+							ostream << *(uint32_t*)&data[i][j] << '\t';
 						}
 						ostream << endl;
 					}

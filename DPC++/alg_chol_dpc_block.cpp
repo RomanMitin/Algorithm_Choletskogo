@@ -38,7 +38,7 @@ void findA22(queue& q, buffer<type, 2>& mat_buff, size_t shift, size_t block_siz
 		{
 			auto mat_acc = mat_buff.get_access<access::mode::read_write>(cgh);
 			//stream ostr(1024, 80, cgh);
-			cgh.parallel_for(range<2>(row, col), [=](item<2> item)
+			cgh.parallel_for(range<2>(row, row), [=](item<2> item)
 				{
 					type sum = 0.0f;
 					size_t i = item.get_id(0);
@@ -46,7 +46,6 @@ void findA22(queue& q, buffer<type, 2>& mat_buff, size_t shift, size_t block_siz
 					for (size_t k = 0; k < col; k++)
 					{
 						sum += mat_acc[i + block_size + shift][k + shift] * mat_acc[j + block_size + shift][k + shift];
-						
 					}
 					
 				/*	if (i == 0 && j == 0 && shift == 3)
@@ -60,7 +59,7 @@ Matrix Cholesky_decomposition_dpc_block(const Matrix& mat, size_t block_size)
 {
 	Matrix result(mat);
 
-	queue q{ cpu_selector() };
+	queue q{ host_selector() };
 
 	int64_t shift;
 	size_t num_work_items = q.get_device().get_info<sycl::info::device::max_compute_units>();
@@ -69,12 +68,11 @@ Matrix Cholesky_decomposition_dpc_block(const Matrix& mat, size_t block_size)
 
 	size_t mat_size = result.sizec();
 
-	result.output();
+	//result.output();
 	
 	{
 		buffer<type, 2> mat_buff(result.p, range<2>(mat_size, mat_size));
-		buffer<type, 1> mat_buff2(result.p, range<1>(mat_size* mat_size));
-		print_on_device2(q, mat_buff2, 10);
+		//print_on_device(q, mat_buff, 10);
 		for (shift = 0; shift < int64_t(result.sizer() - block_size); shift += block_size)
 		{
 			// Обычный алгоритм Холетского для блока L11
