@@ -243,8 +243,6 @@ std::istream& operator>>(std::istream& str, Matrix& mat)
 
 void Matrix::output()
 {
-	std::cout << std::scientific;
-	std::cout << std::setprecision(10);
 	for (size_t i = 0; i < this->_sizer; i++)
 	{
 		for (size_t j = 0; j < this->_sizec; j++)

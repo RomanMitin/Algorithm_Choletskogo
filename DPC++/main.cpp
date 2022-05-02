@@ -13,7 +13,7 @@
 using namespace std;
 
 constexpr bool PRINT_MATRIX = false;
-constexpr int N = 5000;
+constexpr int N = 1000;
 
 int main()
 {

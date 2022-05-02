@@ -197,7 +197,7 @@ std::pair<type,double> error_rate(const Matrix& lower_triangle_exp,const Matrix&
 	
 	type errormax = 0.0;
 	double relative_error = 0;
-	//int im = 0, jm = 0;
+	int im = 0, jm = 0;
 
 	for (int64_t i = 0; i < lower_triangle_calcul.sizer(); i++)
 	{
@@ -208,6 +208,8 @@ std::pair<type,double> error_rate(const Matrix& lower_triangle_exp,const Matrix&
 			{
 				errormax = error;
 				relative_error = abs(lower_triangle_calcul[i][j] - lower_triangle_exp[i][j]) / lower_triangle_exp[i][j] * 100;
+				im = i;
+				jm = j;
 			}
 		}
 	}

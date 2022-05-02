@@ -20,7 +20,7 @@ void print_on_device(queue& q, buffer<type, 2>& data_buf, size_t size)
 					{
 						for (size_t j = 0; j < size; j++)
 						{
-							ostream << *(uint32_t*)&data[i][j] << '\t';
+							ostream << data[i][j] << '\t';
 						}
 						ostream << endl;
 					}
