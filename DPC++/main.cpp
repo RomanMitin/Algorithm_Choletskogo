@@ -13,7 +13,7 @@
 using namespace std;
 
 constexpr bool PRINT_MATRIX = false;
-constexpr int N = 1000;
+constexpr int N = 5000;
 
 int main()
 {
@@ -82,12 +82,12 @@ int main()
 	cout << "Absolute error in Cholesky decomposition algorithm: " << err.first << '\n';
 	cout << "Relative error in Cholesky decomposition algorithm: " << err.second << "%\n\n";
 
-	auto err2 = error_rate(l, c);
+	auto err2 = error_rate(l, d);
 
-	cout << "Absolute error in block Cholesky decomposition_dpc++ algorithm: " << err2.first << '\n';
-	cout << "Relative error in block Cholesky decomposition_dpc++ algorithm: " << err2.second << "%\n\n";
+	cout << "Absolute error in block Cholesky decomposition algorithm: " << err2.first << '\n';
+	cout << "Relative error in block Cholesky decomposition algorithm: " << err2.second << "%\n\n";
 
-	auto err3 = error_rate(l, d);
+	auto err3 = error_rate(l, c);
 
 	cout << "Absolute error in block Cholesky decomposition_dpc++ algorithm: " << err3.first << '\n';
 	cout << "Relative error in block Cholesky decomposition_dpc++ algorithm: " << err3.second << "%\n\n";
