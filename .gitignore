@@ -388,3 +388,6 @@ OpenAPI/My Advisor Results - OpenAPI/e000/hs000/.norun
 *.trace
 *.sc
 *.advixe
+example/main.cpp
+example/main.cpp
+example/main.cpp

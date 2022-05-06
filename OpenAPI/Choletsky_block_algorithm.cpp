@@ -47,19 +47,19 @@ Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int
 
 
 		// Решение нижнетреугольной системы для нахождения блока L21
-		for (int64_t i = 0; i < block_size; i++)
+		//triangular_solver_low(result, block_size, result.sizec() - block_size - shift, shift, block_size);
+		#pragma omp parallel for
+		for (int64_t j = 0; j < result.sizer() - block_size - shift; j++)
 		{
-			#pragma omp parallel for
-			for (int64_t j = 0; j < result.sizer() - block_size - shift; j++)
+			for (int64_t i = 0; i < block_size; i++)
 			{
-				type tmp = result[j + block_size + shift][i + shift];
 				type sum = 0;
 				#pragma omp simd reduction( + : sum)
 				for (size_t k = 0; k < i; k++)
 				{
 					sum += result[i + shift][k + shift] * result[j + block_size + shift][k + shift];
 				}
-				result[j + block_size + shift][i + shift] = tmp - sum;
+				result[j + block_size + shift][i + shift] -= sum;
 
 				result[j + block_size + shift][i + shift] /= result[i + shift][i + shift];
 			}
@@ -131,3 +131,63 @@ Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int
 
 	return result;
 }
+
+//void triangular_solver_low(Matrix& mat, size_t n, size_t m, int64_t shirt, int64_t block_size)
+//{
+//	// happy debug
+//
+//	constexpr size_t column_per_thread = 128;
+//	constexpr size_t basic_subsystem_size = 128;
+//
+//	const size_t threads_block_count = (m + column_per_thread - 1) / column_per_thread;
+//	const size_t subsystem_count = (n + basic_subsystem_size - 1) / basic_subsystem_size;
+//
+//	/*if (b != res) {
+//		memcpy(res, b, n * m * sizeof(type));
+//	}*/
+//
+//#pragma omp parallel for
+//	for (size_t thread_group = 0; thread_group < threads_block_count; thread_group++)
+//	{
+//		const size_t column_block_end = min((thread_group + 1) * column_per_thread, m);
+//		for (size_t subsystem_begin = 0; subsystem_begin < subsystem_count; subsystem_begin++)
+//		{
+//			const size_t row_block_end = min((subsystem_begin + 1) * basic_subsystem_size, n);
+//			for (size_t i = subsystem_begin * basic_subsystem_size; i < row_block_end; i++)
+//			{
+//#pragma omp simd
+//				for (size_t j = thread_group * column_per_thread; j < column_block_end; j++)
+//				{
+//					// res[i][j] = b[i][j] / a[i][i];
+//					res[i * n + j] /= a[i * n + i];
+//				}
+//				for (size_t k = i + 1; k < row_block_end; k++)
+//				{
+//#pragma omp simd
+//					for (size_t j = thread_group * column_per_thread; j < column_block_end; j++)
+//					{
+//						// res[k][j] -= res[i][j] * a[k][i]
+//						res[k * n + j] -= res[i * n + j] * a[k * n + i];
+//					}
+//				}
+//			}
+//
+//			for (size_t additional_block_id = subsystem_begin + 1; additional_block_id < subsystem_count; additional_block_id++)
+//			{
+//				size_t additional_block_end = min((additional_block_id + 1) * basic_subsystem_size, n);
+//				for (size_t i = additional_block_id * basic_subsystem_size; i < additional_block_end; i++)
+//				{
+//					for (size_t k = subsystem_begin * basic_subsystem_size; k < row_block_end; k++)
+//					{
+//#pragma omp simd
+//						for (size_t j = thread_group * column_per_thread; j < column_block_end; j++)
+//						{
+//							// res[i][j] -= a[i][k] * b[k][j];
+//							res[i * n + j] -= a[i * n + k] * res[k * n + j];
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+//}

@@ -51,16 +51,6 @@ Matrix::Matrix(Matrix&& second) noexcept
 	second._sizer = 0;
 }
 
-type* Matrix::operator[](size_t i) noexcept
-{
-	return p + i * _sizec;
-}
-
-const type* Matrix::operator[](size_t i) const noexcept
-{
-	return p + i * _sizec;
-}
-
 Matrix& Matrix::operator=(const Matrix& second)
 {
 	if (this == &second)

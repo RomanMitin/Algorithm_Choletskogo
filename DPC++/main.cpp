@@ -13,7 +13,7 @@
 using namespace std;
 
 constexpr bool PRINT_MATRIX = false;
-constexpr int N = 5000;
+constexpr int N = 6000;
 
 int main()
 {
@@ -67,7 +67,7 @@ int main()
 	duration = end - start;
 	cout << "Cholesky decomposition_dpc++ algorithm time: " << duration.count() << "\n\n";
 
-	//if (PRINT_MATRIX) { c.output(); }
+	if (PRINT_MATRIX) { c.output(); }
 	
 	start = std::chrono::high_resolution_clock::now();
 	Matrix g = Cholesky_decomposition_dpc_block(a);
@@ -75,7 +75,7 @@ int main()
 	duration = end - start;
 	cout << "Cholesky decomposition_dpc++_block algorithm time: " << duration.count() << "\n\n";
 
-	if (PRINT_MATRIX) { g.output(); }
+	if constexpr (PRINT_MATRIX) { g.output(); }
 
 	auto err = error_rate(l, b);
 
