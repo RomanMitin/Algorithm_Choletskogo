@@ -3,6 +3,7 @@
 #include<mkl.h>
 #include"Choletsky_block_algorithm.h"
 
+#ifdef USE_OMP
 
 Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int64_t block_size, int block_sz_n, int block_sz_m) noexcept
 {
@@ -131,7 +132,7 @@ Matrix Cholesky_decomposition_block_with_matrixblock_mult(const Matrix& mat, int
 
 	return result;
 }
-
+#endif // USE_OMP
 //void triangular_solver_low(Matrix& mat, size_t n, size_t m, int64_t shirt, int64_t block_size)
 //{
 //	// happy debug

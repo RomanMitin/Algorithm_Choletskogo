@@ -10,6 +10,7 @@
 #include"Matrix_func.h"
 #include"Choletsky_block_algorithm.h"
 #include"Tests.h"
+#include "..\\DPC++\alg_chol.h"
 
 using namespace std;
 
@@ -25,7 +26,8 @@ void Get_matrix_form_file(Matrix& a, Matrix& l)
 
 	string file_name = "Pos_def_Matrix_size_" + to_string(N);
 	ifstream file;
-	file.open("C:\\Users\\User\\source\\repos\\OpenAPI\\Create_positive_def_Matix\\" + file_name, ios::binary | ios::in);
+	// WRITE YOUR PATH HERE
+	file.open("C:\\Users\\User\\source\\repos\\OpenAPI\\Create_positive_def_Matix\\" + file_name, ios::binary | ios::in); 
 	if (file.is_open())
 	{
 		file >> l;
@@ -51,27 +53,28 @@ Matrix start_alg(Matrix& mat, int alg, double& time, int64_t block1, int block2,
 	switch (alg)
 	{
 	case 1:
-		//result = Cholesky_decomposition(mat);
+		result = Cholesky_decomposition(mat);
 		break;
 	case 2:
 		result = Cholesky_decomposition_block_with_matrixblock_mult(mat, block1, block2, block3);
 		break;
 	case 3:
-		//mklcholetsky_algorithm(mat);
+		result = mklcholetsky_algorithm(mat);
+		break;
+	case 4:
+		result = Cholesky_decomposition_dpc(mat);
+		break;
+	case 5:
+		result = Cholesky_decomposition_dpc_block(mat, block1);
 		break;
 	default:
-		cerr << "Wrong algo in argv[2][0]\n";
-		throw std::exception();
-		break;
+		cerr << "Wrong symbol in argv[2][0]\n";
+		exit(-2);
 	}
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> duration = end - start;
 	time = duration.count();
 
-	if (alg == 3)
-	{
-		return mat;
-	}
 	return result;
 }
 

@@ -4,6 +4,8 @@
 #include<iomanip>
 
 typedef float type;
+#define USE_OMP
+#define USE_DPC
 
 class Matrix
 {

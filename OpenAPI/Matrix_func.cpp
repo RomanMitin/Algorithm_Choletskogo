@@ -1,29 +1,32 @@
 #include<omp.h>
 #include<cmath>
 #include<algorithm>
-//#include<mkl.h>
+#include<mkl.h>
 #include"Matrix_func.h"
 
-//Matrix mklcholetsky_algorithm(Matrix& mat)
-//{
-//	//int info;
-//	//dpotrf("L", reinterpret_cast<int*>(&mat._sizer), mat.p, reinterpret_cast<int*>(&mat._sizec), &info);
-//	Matrix result(mat);
-//	LAPACKE_dpotrf(LAPACK_ROW_MAJOR, 'L', mat.sizec(), result.p, mat.sizer());
-//	#pragma omp parallel for
-//	for (int i = 0; i < mat.sizec() - 1; i++)
-//	{
-//		memset(result[i] + i + 1, 0, sizeof(type) * (result.sizer() - i - 1));
-//	}
-//
-//	return result;
-//}
+#ifdef USE_OMP
+
+Matrix mklcholetsky_algorithm(Matrix& mat)
+{
+	//int info;
+	//dpotrf("L", reinterpret_cast<int*>(&mat._sizer), mat.p, reinterpret_cast<int*>(&mat._sizec), &info);
+	Matrix result(mat);
+	LAPACKE_spotrf(LAPACK_ROW_MAJOR, 'L', mat.sizec(), result.p, mat.sizer());
+	#pragma omp parallel for
+	for (int i = 0; i < mat.sizec() - 1; i++)
+	{
+		memset(result[i] + i + 1, 0, sizeof(type) * (result.sizer() - i - 1));
+	}
+
+	return result;
+}
+
+#endif // USE_OMP
 
 double randd()
 {
 	return (rand() % 100 - 50) / 10.0;
 }
-
 
 Matrix create_Lower_triangle_matrix(int64_t size)
 {
@@ -86,6 +89,8 @@ Matrix create_positive_definite_matrix(size_t size)
 	return sqr(create_Lower_triangle_matrix(size));
 }
 
+#ifdef USE_OMP
+
 Matrix Cholesky_decomposition(const Matrix& mat) noexcept
 {
 	/*if (mat.sizec() != mat.sizer())
@@ -127,6 +132,8 @@ Matrix Cholesky_decomposition(const Matrix& mat) noexcept
 	
 	return l;
 }
+
+#endif // USE_OMP
 
 template <typename L_M, typename M>
 M calc_L(const L_M& a, const M& b, size_t a_size, size_t b_columns)

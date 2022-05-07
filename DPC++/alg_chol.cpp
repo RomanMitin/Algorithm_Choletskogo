@@ -2,6 +2,8 @@
 #include<math.h>
 #include"alg_chol.h"
 
+#ifdef USE_DPC
+
 using namespace sycl;
 
 
@@ -298,3 +300,4 @@ void Cholesky_decomposition_dpc(queue& q, buffer<type, 2>& mat_buff, size_t shif
 	}
 }
 
+#endif // USE_DPC

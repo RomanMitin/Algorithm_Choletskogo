@@ -2,6 +2,8 @@
 #include <CL\sycl.hpp>
 #include"..\\OpenAPI\Matrix.h"
 
+
+
 void print_on_device(sycl::queue& q, sycl::buffer<type, 2>& data_buf, size_t size);
 void print_on_device2(sycl::queue& q, sycl::buffer<type, 1>& data_buf, size_t size);
 
